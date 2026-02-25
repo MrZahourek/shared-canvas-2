@@ -1,41 +1,31 @@
 // # Variables
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let cssTimerInterval = null;
-
-const timerElement = {
-    text: document.getElementById("timer_time").innerText,
-    parent: document.getElementById("timer_wrap")
-}
-
 // # Functions
 
-// info grab functions
-async function getCanvasConfig() {
-    // authenticate
-
-    // get canvas config
-
-    // load into storage
-    for (const data of result.config) {
-        localStorage.setItem(data.key, data.value);
+// canvas functions
+function draw(pixelData) {
+    for (const pixel of pixelData) {
+        ctx.fillStyle = pixel.color;
+        ctx.fillRect(pixel.x, pixel.y, 1, 1);
     }
-
 }
 
-async function getUserData() {
-    // authenticate
+function scale() {
+    canvas.width = localStorage.getItem("canvas_width") * localStorage.getItem("canvas_scale");
+    canvas.height = localStorage.getItem("canvas_height") * localStorage.getItem("canvas_scale");
+}
 
-    let url = "../app/services/AuthService.php";
+// php functions
+async function authenticate() {
+    let url = "../app/actions/Auth.php"
     let auth;
-
     try {
         const response = await fetch(url, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({requests: ["username", "last_edit_at"]})
+            body: JSON.stringify({})
         });
 
         if (!response.ok) {
@@ -46,55 +36,155 @@ async function getUserData() {
     } catch (error) {
         console.error(error.message);
     }
+}
+
+async function getUserData() {
+    // authenticate
+    const auth = await authenticate();
+
+    if (!auth.success) {
+        console.error("auth fail");
+        return 0;
+    }
 
     // get user data
-    url = "../app/models/User.php";
-    let result;
-
+    let url = "../app/models/User.php";
+    let user;
     try {
         const response = await fetch(url, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({requests: ["username", "last_edit_at"]})
+            body: JSON.stringify({})
         });
 
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
 
-        result = await response.json();
+        user = await response.json();
+
+
     } catch (error) {
         console.error(error.message);
     }
 
-    // load into storage
-    for (const data of result.user) {
-        localStorage.setItem(data.key, data.value);
+    return user;
+}
+
+async function getCanvasConfig() {
+    // find canvas config file
+    let url = "../app/models/Canvas.php";
+    let canvasConfig;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name")})
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        canvasConfig = await response.json();
+
+
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    // load it into local storage
+    if (canvasConfig.success) {
+        for (const [key, value] of Object.entries(canvasConfig)) {
+            if (key !== "success") {
+                localStorage.setItem(key, value);
+            }
+        }
     }
 }
 
-async function getNewPixels() {}
+async function getSnapshot() {
+    let url = "../app/services/CanvasService.php";
+    let snapshotData;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name"), action: "get snapshot"})
+        });
 
-async function sendNewPixel(x, y, color) {
-    // authenticate
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
 
-    // validate time
+        snapshotData = await response.json();
+    } catch (error) {
+        console.error(error.message);
+    }
 
-    // send pixels
-
-
+    if (snapshotData.edits !== []) {
+        localStorage.setItem("lastID", snapshotData.lastID);
+        return snapshotData.edits;
+    }
 }
 
-// canvas functions
-function draw(pixels) {}
+async function getEdits() {
+    let url = "../app/services/CanvasService.php";
+    let pixelData;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name"), lastID: localStorage.getItem("lastID"), action: "get edits"})
+        });
 
-function scale() {
-    canvas.width = localStorage.getItem("width") * localStorage.getItem("scale");
-    canvas.height = localStorage.getItem("height") * localStorage.getItem("scale");
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        pixelData = await response.json();
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    if (pixelData.edits !== []) {
+        localStorage.setItem("lastID", pixelData.lastID);
+        return pixelData.edits;
+    }
+}
+
+async function sendEdit(x, y, color) {
+    // authenticate
+    const auth = await authenticate();
+
+    if (!auth.success) {
+        console.error("auth fail");
+        return 0;
+    }
+
+    let url = "../app/services/CanvasService.php";
+    let editResult;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name"), x: x, y: y, color: color, action: "new edit"})
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        editResult = await response.json();
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    return editResult;
 }
 
 async function clickHandler(event) {
-    // get x and y
+    // get x and y on canvas
     const canvasBox = canvas.getBoundingClientRect();
     const x = event.clientX - canvasBox.left;
     const y = event.clientY - canvasBox.top;
@@ -102,85 +192,48 @@ async function clickHandler(event) {
     // get color
     const color = document.getElementById("color_input").value;
 
-    // attempt to send
-    let editSendResult = await sendNewPixel(x, y, color);
+    // validate that user can edit
+    if (canvas.classList.contains("ready")) {
+        // 1. also check with database
+        let userData = await getUserData();
 
-    // process
-    if (editSendResult.success) {
-        // trigger redraw
-        draw( await getNewPixels());
+        if ((Date.now() - userData.last_edit_at) >= praseInt(localStorage.getItem("canvas_wait_time")) ) {
+            let editResult = await sendEdit(x, y, color);
 
-        // reset timer
-        canvas.classList.remove("ready");
-        canvas.classList.add("loading");
+            if (editResult.success) {
+                // reset timer and canvas state
+                canvas.classList.remove("ready");
+                canvas.classList.add("loading");
 
-
-
-        // put away event listener
-        canvas.removeEventListener("click", clickHandler);
+                // remove event listener
+                canvas.removeEventListener("click", clickHandler);
+            }
+        }
     }
 }
 
-// css edit functions
-function timerCSS() {
-    let startTime = parseInt(localStorage.getItem("last_edit")); // Time of last pixel
-    let waitTime = parseInt(localStorage.getItem("wait_time"));  // e.g., 30000 for 30s
-    let curTime = Date.now();
-
-    let timePassed = curTime - startTime;
-    let remaining = waitTime - timePassed;
-
-    if (remaining <= 0) {
-        // User can draw
-        canvas.classList.add("ready");
-        canvas.classList.remove("loading");
-        timerElement.text = "Ready!";
-        timerElement.parent.style.borderColor = "#4df3ff";
-    } else {
-        // User must wait
-        canvas.classList.remove("ready");
-        canvas.classList.add("loading");
-
-        // Show remaining seconds
-        let seconds = Math.ceil(remaining / 1000);
-        document.getElementById("timer_time").innerText = seconds + " s";
-    }
-}
-
-// # Event Listeners
-
-// Canvas
+// # Listeners
 
 // Window - load
-window.addEventListener("load", (e) => {
+window.addEventListener("load", async (event) => {
     // hide canvas
+    canvas.style.display = "none";
 
-    // get config file
+    // config
+    await getCanvasConfig()
+        .then(() => {scale();})
+        .then(() => {
+            ctx.fillStyle = localStorage.getItem("canvas_background");
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        });
 
-    // scale
+    // get snap and edits
+    await draw( await getSnapshot() );
 
-    // get snapshot file
+    await draw( await getEdits() );
 
-    // draw
-
-    // get edits
-
-    // draw
-
-    // get user data
-
-    // activate css
-
-    // results
+    // set the timer
 
     // show canvas
-});
-
-// Window - visibility
-document.addEventListener("visibilitychange", async () => {
-    if (document.visibilityState === "visible") {
-        await getUserData();
-        await getCanvasConfig();
-        timerCSS(); // Immediate refresh when user comes back
-    }
-});
+    canvas.style.display = "block";
+})

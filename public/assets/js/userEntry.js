@@ -82,7 +82,7 @@ newUserForm.addEventListener("submit", async (e) => {
         }
     }
     else {
-        localStorage.setItem("canvas name", document.getElementById("canvasNameInput").value);
+        localStorage.setItem("canvas_name", document.getElementById("canvasNameInput").value);
         // redirect
         window.location.href = "../public/canvas.php";
     }

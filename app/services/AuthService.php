@@ -17,64 +17,47 @@ $db = new Database();
 // Get the JSON data sent from userEntry.js
 $data = json_decode(file_get_contents("php://input"), true);
 
-// Prepare response
-$response = ["success" => false, "errorList" => []];
+function authSession($db, $username, $password) {
+    // 1. make sure the password and username match
 
-// # Login of user
-if ($data["authType"] == "login") {
-    // check if the input is correct
-    $username = $data["username"];
-    $password = $data["password"];
+    // 2. check the tokens
+    $tokens = getTokens();
+    if ($tokens->refresh != "") {
+        // hash token
+        $token_hash = hash('sha256', $tokens->refresh);
 
-    // 1. Check if the user exists
-    $sql = "SELECT userID, username, password_hash FROM users WHERE username = ?";
-    $stmt = $db->runQuery($sql, [$username]);
-    $user = $stmt->fetch();
+        // get user id from database
+        $last_session = $db->runQuery(
+            "select * from active_sessions where refresh_token_hash = ?",
+            [$token_hash]
+        )->fetch();
 
-    if ($user) {
-        // 2. Verify the password against the stored hash
-        if (password_verify($password, $user['password_hash'])) {
-            // SUCCESS
-            $response["success"] = true;
+        // compare username thats getting authenticated to the one from session
+        $last_user = User::findById($last_session["userID"], $db);
 
-            // Token check
-            if (isset($_COOKIE["refresh token"])) {
-                // if the refresh token is still set in cookie get the hash by the logged user id (if possible)
-                $token = $_COOKIE["refresh token"];
-                $sql = "SELECT refresh_token_hash FROM active_sessions where userID = ?";
-                $stmt = $db->runQuery($sql, [$user["userID"]]);
-                $token_hash = $stmt->fetch();
-
-                // check
-                if($token_hash) {
-                    // does the set token match the user
-                    if (password_verify($token, $token_hash)) {
-                        // user is connected again
-                        generateToken("access", $db);
-                        refreshToken("refresh", $db);
-                    }
-                    else {
-                        // different user
-                    }
-                }
-            }
-        } else {
-            // Wrong password
-            $response["errorList"][] = "Invalid password.";
+        if ($last_user["username"] == $username) {
+            // the user is same and we can refresh the refresh token and make new access token
         }
-    } else {
-        // User not found
-        $response["errorList"][] = "Invalid username - user doesnt exist.";
+        else {
+            // the user is not the same and its time to generate new session
+        }
+    }
+    else {
+        // tokens are expired and new session has to be made
     }
 
-    // Return the result to your JavaScript
-    header('Content-Type: application/json');
-    echo json_encode($response);
-    exit;
+    // session is ready
 }
 
-// # New user
-if ($data["authType"] == "newUser") {}
+// # Creating user
 
-// # User request
-if ($data["authType"] == "authenticate") {}
+if ($data["new user"]) {
+    // create user
+
+    // auth session
+}
+else {
+    // logging in
+
+    // auth session
+}

@@ -10,7 +10,12 @@ async function sendData(type, username, password) {
     let result;
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({authType: type, username: username, password: password})
+        });
+
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
@@ -30,8 +35,8 @@ loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     // variables
     const userInput = {
-        username: document.getElementById("LogUsername").innerText,
-        password: document.getElementById("LogPass").innerText
+        username: document.getElementById("LogUsername").value,
+        password: document.getElementById("LogPass").value
     }
 
     // go check if correct
@@ -48,7 +53,7 @@ loginForm.addEventListener("submit", async (e) => {
         }
     }
     else {
-        localStorage.setItem("canvas name", document.getElementById("canvasNameInput").innerText);
+        localStorage.setItem("canvas name", document.getElementById("canvasNameInput").value);
         // redirect
         window.location.href = "../public/canvas.php";
     }
@@ -59,8 +64,8 @@ newUserForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     // variables
     const userInput = {
-        username: document.getElementById("NewUsername").innerText,
-        password: document.getElementById("NewPass").innerText
+        username: document.getElementById("NewUsername").value,
+        password: document.getElementById("NewPass").value
     }
 
     // go check if correct
@@ -77,7 +82,7 @@ newUserForm.addEventListener("submit", async (e) => {
         }
     }
     else {
-        localStorage.setItem("canvas name", document.getElementById("canvasNameInput").innerText);
+        localStorage.setItem("canvas name", document.getElementById("canvasNameInput").value);
         // redirect
         window.location.href = "../public/canvas.php";
     }

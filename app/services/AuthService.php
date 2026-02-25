@@ -49,8 +49,8 @@ if ($data["authType"] == "login") {
                     // does the set token match the user
                     if (password_verify($token, $token_hash)) {
                         // user is connected again
-                        generateToken("access");
-                        refreshToken("refresh");
+                        generateToken("access", $db);
+                        refreshToken("refresh", $db);
                     }
                     else {
                         // different user

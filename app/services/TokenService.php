@@ -39,7 +39,7 @@ function refreshToken($tokenType, $db = new Database()) {
         // update db
         $hash = password_hash($token, PASSWORD_DEFAULT);
         $sql = "update active_sessions set refresh_token_expire = :time where refresh_token_hash = :hash";
-        $stmt = $db->runQuerry($sql, ['time' => $newExpiration, 'hash' => $hash]);
+        $stmt = $db->runQuery($sql, ['time' => $newExpiration, 'hash' => $hash]);
 
     }
     else {

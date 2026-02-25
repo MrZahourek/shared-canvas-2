@@ -117,7 +117,7 @@ async function clickHandler(event) {
 
 
         // put away event listener
-        canvas.removeEventListener("click", clickHandler(event));
+        canvas.removeEventListener("click", clickHandler);
     }
 }
 

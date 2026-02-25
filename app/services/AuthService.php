@@ -9,6 +9,7 @@
 */
 include "../app/controllers/conn.php";
 include "../app/services/TokenService.php";
+include "../app/models/User.php";
 
 // Initialize Database
 $db = new Database();

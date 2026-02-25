@@ -74,3 +74,6 @@ if ($data["authType"] == "login") {
 
 // # New user
 if ($data["authType"] == "newUser") {}
+
+// # User request
+if ($data["authType"] == "authenticate") {}

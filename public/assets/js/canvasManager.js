@@ -13,9 +13,65 @@ const timerElement = {
 // # Functions
 
 // info grab functions
-async function getCanvasConfig() {}
+async function getCanvasConfig() {
+    // authenticate
 
-async function getUserData() {}
+    // get canvas config
+
+    // load into storage
+    for (const data of result.config) {
+        localStorage.setItem(data.key, data.value);
+    }
+
+}
+
+async function getUserData() {
+    // authenticate
+
+    let url = "../app/services/AuthService.php";
+    let auth;
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({requests: ["username", "last_edit_at"]})
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        auth = await response.json();
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    // get user data
+    url = "../app/models/User.php";
+    let result;
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({requests: ["username", "last_edit_at"]})
+        });
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        result = await response.json();
+    } catch (error) {
+        console.error(error.message);
+    }
+
+    // load into storage
+    for (const data of result.user) {
+        localStorage.setItem(data.key, data.value);
+    }
+}
 
 async function getNewPixels() {}
 
@@ -66,21 +122,28 @@ async function clickHandler(event) {
 }
 
 // css edit functions
-function timerCSS(){
-    // check time
-    let startTime = localStorage.getItem("last_edit");
+function timerCSS() {
+    let startTime = parseInt(localStorage.getItem("last_edit")); // Time of last pixel
+    let waitTime = parseInt(localStorage.getItem("wait_time"));  // e.g., 30000 for 30s
     let curTime = Date.now();
-    let waitTime = localStorage.getItem("wait_time");
 
-    let timeLeft = curTime - startTime;
+    let timePassed = curTime - startTime;
+    let remaining = waitTime - timePassed;
 
-    if(timeLeft => waitTime) {
+    if (remaining <= 0) {
+        // User can draw
         canvas.classList.add("ready");
         canvas.classList.remove("loading");
+        timerElement.text = "Ready!";
+        timerElement.parent.style.borderColor = "#4df3ff";
+    } else {
+        // User must wait
+        canvas.classList.remove("ready");
+        canvas.classList.add("loading");
 
-    }
-    else {
-        timerElement.text = Math.floor( timeLeft / 1000 ) + " s";
+        // Show remaining seconds
+        let seconds = Math.ceil(remaining / 1000);
+        document.getElementById("timer_time").innerText = seconds + " s";
     }
 }
 
@@ -114,3 +177,10 @@ window.addEventListener("load", (e) => {
 });
 
 // Window - visibility
+document.addEventListener("visibilitychange", async () => {
+    if (document.visibilityState === "visible") {
+        await getUserData();
+        await getCanvasConfig();
+        timerCSS(); // Immediate refresh when user comes back
+    }
+});

@@ -1,6 +1,8 @@
 // # Variables
 
 // # Functions
+
+// info grab functions
 async function getCanvasConfig() {}
 
 async function getUserData() {}
@@ -9,4 +11,6 @@ async function getUserData() {}
 
 // Canvas
 
-// Window
+// Window - load
+
+// Window - visibility

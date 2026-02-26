@@ -114,4 +114,22 @@
 }
 
 /* -- drawing_tools -- */
-.drawing_tools {}
+.drawing_tools {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-direction: column;
+
+    width: 90%;
+}
+
+.draw_timer {
+    background-color: #333333;
+    color: crimson;
+    font-size: 3rem;
+}
+
+.color_picks {
+    display: flex;
+    flex-direction: row;
+}

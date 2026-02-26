@@ -25,14 +25,6 @@ body {
     overflow: hidden;
 }
 
-.content, .scan-bar {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    z-index: -1;
-}
-
 .bezel {
     box-shadow: 2px 2px 8px rgb(24, 24, 24);
     position: absolute;
@@ -56,12 +48,19 @@ body {
     height: 100%;
     animation: scan 3s infinite linear;
     pointer-events: none; /* Let clicks pass through */
+
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    z-index: 2;
 }
 
 .scan {
     height: 30px;
     width: 100%;
-    background-color: rgba(196, 196, 196, 0.4);
+    background-color: rgba(196, 196, 196, 0.445);
+    opacity: 0.75;
 }
 
 /* FIX: Changed 100% to 100vh so it scans the whole screen, not just 20px */
@@ -77,6 +76,12 @@ body {
 
 /* -- */
 .content {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    z-index: 1;
+
     background-image: url("../images/background.gif");
     background-repeat: no-repeat;
     background-size: 100%; /* Or 'cover' if it looks stretched */

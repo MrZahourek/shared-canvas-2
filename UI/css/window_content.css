@@ -1,0 +1,117 @@
+:root {
+    /* colors */
+    --win98-bg: #c0c0c0; /* The exact classic gray */
+    --win98-bg-dark: #a5a5a5;
+    --win98-title: #000080; /* Classic Navy */
+
+    /* shadows */
+    --border-outset: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+    --border-inset: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+    --border-outset-inverse: -1px -1px #0a0a0a, 1px 1px #fff, -2px -2px #808080, 2px 2px #dfdfdf;
+    --border-inset-inverse: -1px -1px #fff, 1px 1px #0a0a0a, -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+/* WINDOW CONTENT */
+.window_content {
+    padding: 15px;
+    margin: 15px 5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    border: 2px solid black;
+
+    font-family: "VT323", monospace;
+}
+
+.window_content_text {
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+}
+
+/* -- canvas_buttons -- */
+.canvas_buttons {
+    flex-direction: column;
+}
+
+.canvas_buttons_user_wrap {
+    /*border: 2px forestgreen solid;*/
+
+    margin-bottom: 5%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.canvas_buttons_userProfile {
+    aspect-ratio: 1 / 1;
+    width: 25%;
+
+    margin-bottom: 5px;
+}
+
+.canvas_buttons_username {
+    font-family: 'VT323', monospace;
+    font-weight: 650;
+    font-size: 25px;
+
+
+    box-shadow: var( --border-outset-inverse);
+    background-color: var(--win98-bg-dark);
+    padding: 3px 15px;
+    align-self: center;
+    width: 33%;
+}
+
+.canvas_area_btn_wrap {
+    width: 75%;
+
+    /*border: 2px solid crimson;*/
+
+    flex-direction: column;
+}
+
+.canvas_area_btn_wrap .window_btn {
+    width: 100%;
+    margin: 5% 0;
+
+    font-weight: 500;
+    font-family: "VT323", monospace;
+    font-size: 1.3rem;
+}
+
+/* -- canvas_area -- */
+.canvas_area {}
+
+/* -- music_player -- */
+.music_player {}
+
+.music_player_top {
+    width: 90%;
+    height: 75%;
+}
+
+.music_player_img {
+    aspect-ratio: 1 / 1;
+
+    width: 33%;
+    float: left;
+}
+
+.music_player_song_name {
+    background-color: var(--win98-bg-dark);
+    box-shadow: var(--border-outset-inverse);
+
+    width: 75%;
+    height: 15%;
+    padding: 10px 75px;
+
+    font-weight: 900;
+    font-size: 1.25rem;
+}
+
+/* -- drawing_tools -- */
+.drawing_tools {}

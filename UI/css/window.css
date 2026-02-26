@@ -1,0 +1,102 @@
+:root {
+    --win98-bg: #c0c0c0; /* The exact classic gray */
+    --win98-title: #000080; /* Classic Navy */
+
+    --border-outset: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+    --border-inset: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+body {
+    background-color: #008080; /* Classic Windows 98 teal background */
+    height: 100vh;
+    margin: 0;
+    /* Turn off anti-aliasing for that crunchy 90s look */
+    -webkit-font-smoothing: none;
+    font-family: 'Pixelated MS Sans Serif', Tahoma, Arial, sans-serif;
+    font-size: 12px;
+}
+
+/* THE MAIN WINDOW */
+.window {
+    background-color: var(--win98-bg);
+    width: auto;
+    padding: 3px;
+    /* The magic Windows 98 outward bevel */
+    box-shadow: var(--border-outset);
+}
+
+/* THE TITLE BAR */
+.window_header {
+    background-color: var(--win98-title);
+    color: white;
+    padding: 3px 2px 3px 4px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 0.5px;
+}
+
+.window_name {
+    flex-grow: 1;
+}
+
+.window_controls {
+    display: flex;
+    gap: 2px;
+}
+
+/* TITLE BAR BUTTONS */
+.window_top_btn {
+    background-color: var(--win98-bg);
+    color: black;
+    width: 16px;
+    height: 14px;
+    font-weight: bold;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: default;
+    /* Standard outward bevel */
+    box-shadow: var(--border-outset);
+}
+
+.window_top_btn:active {
+    /* Pushed in bevel */
+    box-shadow: var(--border-inset);
+    padding-top: 2px; /* Slight shift down when clicked */
+    padding-left: 2px;
+}
+
+/* FOOTER / BUTTONS */
+.window_footer {
+    display: flex;
+    justify-content: center;
+    align-self: flex-end;
+    padding-bottom: 10px;
+}
+
+.window_btn {
+    background-color: var(--win98-bg);
+    color: black;
+    font-family: "VT323", monospace;
+    font-size: 12px;
+    padding: 4px 20px;
+    box-shadow: var(--border-outset);
+    border: none;
+    outline: 1px solid transparent; /* Prevents weird shifting */
+    cursor: pointer;
+}
+
+/* The dotted focus ring when a button is selected */
+.window_btn:focus {
+    outline: 1px dotted black;
+    outline-offset: -4px;
+}
+
+.window_btn:active {
+    box-shadow: var(--border-inset);
+    padding-top: 5px; /* Shift text down */
+    padding-bottom: 3px;
+}

@@ -24,9 +24,6 @@ body {
 
 /* --- MAIN WINDOW CONTAINER --- */
 .window.music {
-    /* position: fixed; */
-    /* bottom: 20px; */
-    /* left: 20px; */
     width: 100%; /* Change width to 100% so it fills the grid column */
     background-color: var(--win98-bg);
     /* The main outer window border */
@@ -36,6 +33,9 @@ body {
     flex-direction: column;
     gap: 4px;
     user-select: none; /* Makes it feel more like an app */
+
+    position: absolute;
+    top: calc(-5vh + 15px);
 }
 
 /* --- TITLE BAR --- */
@@ -52,10 +52,6 @@ body {
 
 .window_name {
     display: flex; align-items: center; gap: 5px;
-}
-/* A little fake icon for the title bar */
-.window_name::before {
-    content: "🎵"; font-size: 10px;
 }
 
 .window_top_btn {
@@ -74,7 +70,7 @@ body {
     /* The sunken effect */
     box-shadow: var(--border-inset);
     padding: 6px;
-    height: 80px;
+    height: 105px;
     /* Using Grid to lay out the timer vs info areas */
     display: grid;
     grid-template-columns: auto 1fr;
@@ -96,6 +92,7 @@ body {
     opacity: .4;
     z-index: -1;
     background: url('../images/music_1.jpg');
+    background-size: cover;
 }
 
 /* Common styles for the LED text */
@@ -164,6 +161,36 @@ body {
     display: flex; justify-content: center; align-items: center;
     cursor: pointer;
     font-size: 14px; color: #444; /* Slightly dimmed symbols */
+}
+
+/* Volume Slider Styling */
+.music_volume_wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: #000;
+}
+
+.music_volume {
+    -webkit-appearance: none;
+    width: 60px;
+    height: 4px;
+    background: var(--win98-dark);
+    box-shadow: var(--border-inset);
+    outline: none;
+}
+
+/* The grabber block on the slider */
+.music_volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 16px;
+    background: var(--win98-bg);
+    box-shadow: var(--border-outset);
+    cursor: pointer;
 }
 
 /* Button interaction states */

@@ -26,9 +26,10 @@
         <div class="scan"></div>
     </div>
     <div id="grid_wrap" class="content">
-        <div class="window">
+
+        <div class="window" style="height: 95%">
             <div class="window_header">
-                <span class="window_name">USERNAME</span>
+                <span class="window_name icon-user">USERNAME</span>
                 <div class="window_controls">
                     <div class="window_top_btn">_</div>
                     <div class="window_top_btn">☐</div>
@@ -38,8 +39,12 @@
             <div class="window_content canvas_buttons">
 
                 <div class="canvas_buttons_user_wrap">
-                    <img src="images/user.jpg" alt="" class="canvas_buttons_userProfile">
-                    <span class="canvas_buttons_username">USER</span>
+                    <div class="profile_img_container">
+                        <img src="images/user.jpg" alt="" class="canvas_buttons_userProfile">
+                        <div class="profile_glitch_overlay"></div>
+                    </div>
+                    <span class="canvas_buttons_username">USER_994</span>
+                    <span class="profile_status">STATUS: CONNECTED</span>
                 </div>
 
                 <div class="canvas_area_btn_wrap">
@@ -55,7 +60,7 @@
 
         <div class="window">
             <div class="window_header">
-                <span class="window_name">canvas_area</span>
+                <span class="window_name icon-canvas">canvas_area</span>
                 <div class="window_controls">
                     <div class="window_top_btn">_</div>
                     <div class="window_top_btn">☐</div>
@@ -72,7 +77,7 @@
 
         <div class="window music">
             <div class="window_header">
-                <span class="window_name">Media Player</span>
+                <span class="window_name icon-music">Media Player</span>
                 <div class="window_controls">
                     <div class="window_top_btn">_</div>
                     <div class="window_top_btn">☐</div>
@@ -87,22 +92,25 @@
             <div class="music_controls">
                 <div class="music_controls_info">
                     <span>128kbps</span>
-                    <span>44kHz</span>
                 </div>
+
+                <div class="music_volume_wrap">
+                    <span>VOL</span>
+                    <input type="range" class="music_volume" min="0" max="100" value="50">
+                </div>
+
                 <div class="music_controls_buttons">
                     <button class="music_btn mb-prev"></button>
                     <button class="music_btn mb-play"></button>
                     <button class="music_btn mb-pause"></button>
-                    <button class="music_btn mb-stop"></button>
                     <button class="music_btn mb-next"></button>
-                    <button class="music_btn mb-open"></button>
                 </div>
             </div>
         </div>
 
         <div class="window">
             <div class="window_header">
-                <span class="window_name">drawing_tools</span>
+                <span class="window_name icon-tools">drawing_tools</span>
                 <div class="window_controls">
                     <div class="window_top_btn">_</div>
                     <div class="window_top_btn">☐</div>

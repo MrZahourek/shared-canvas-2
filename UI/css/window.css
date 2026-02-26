@@ -65,6 +65,12 @@ body::after {
     flex-grow: 1;
 }
 
+/* Unique icons for each window */
+.icon-user::before { content: "👁️"; font-size: 10px; filter: grayscale(1); } /* Creepy eye for the profile */
+.icon-canvas::before { content: "🌐"; font-size: 10px; }
+.icon-music::before { content: "🎵"; font-size: 10px; }
+.icon-tools::before { content: "⚙️"; font-size: 10px; }
+
 .window_controls {
     display: flex;
     gap: 2px;

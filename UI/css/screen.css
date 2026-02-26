@@ -59,9 +59,9 @@ body {
 }
 
 .scan {
-    height: 20px;
+    height: 30px;
     width: 100%;
-    background-color: rgba(196, 196, 196, 0.2);
+    background-color: rgba(196, 196, 196, 0.4);
 }
 
 /* FIX: Changed 100% to 100vh so it scans the whole screen, not just 20px */

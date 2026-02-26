@@ -24,10 +24,10 @@ body {
 
 /* --- MAIN WINDOW CONTAINER --- */
 .window.music {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    width: 275px;
+    /* position: fixed; */
+    /* bottom: 20px; */
+    /* left: 20px; */
+    width: 100%; /* Change width to 100% so it fills the grid column */
     background-color: var(--win98-bg);
     /* The main outer window border */
     box-shadow: var(--border-outset);

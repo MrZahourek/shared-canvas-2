@@ -14,110 +14,118 @@
     <link rel="stylesheet" href="css/grid.css">
     <link rel="stylesheet" href="css/window_content.css">
     <link rel="stylesheet" href="css/music.css">
+    <link rel="stylesheet" href="css/screen.css">
 
 </head>
 <body>
 
-<div id="grid_wrap">
-    <div class="window">
-        <div class="window_header">
-            <span class="window_name">USERNAME</span>
-            <div class="window_controls">
-                <div class="window_top_btn">_</div>
-                <div class="window_top_btn">☐</div>
-                <div class="window_top_btn">X</div>
-            </div>
-        </div>
-        <div class="window_content canvas_buttons">
-
-            <div class="canvas_buttons_user_wrap">
-                <img src="images/user.jpg" alt="" class="canvas_buttons_userProfile">
-                <span class="canvas_buttons_username">USER</span>
-            </div>
-
-            <div class="canvas_area_btn_wrap">
-                <button class="window_btn">New Canvas</button>
-                <button class="window_btn">Random Connect</button>
-                <button class="window_btn">Custom Connect</button>
-            </div>
-        </div>
-        <div class="window_footer">
-            <!--<button class="window_btn">OK</button>-->
-        </div>
+<!-- screen effect -->
+<div class="screen">
+    <img src="./images/bezel.png" alt="" class="bezel">
+    <div class="scan-bar">
+        <div class="scan"></div>
     </div>
+    <div id="grid_wrap" class="content">
+        <div class="window">
+            <div class="window_header">
+                <span class="window_name">USERNAME</span>
+                <div class="window_controls">
+                    <div class="window_top_btn">_</div>
+                    <div class="window_top_btn">☐</div>
+                    <div class="window_top_btn">X</div>
+                </div>
+            </div>
+            <div class="window_content canvas_buttons">
 
-    <div class="window">
-        <div class="window_header">
-            <span class="window_name">canvas_area</span>
-            <div class="window_controls">
-                <div class="window_top_btn">_</div>
-                <div class="window_top_btn">☐</div>
-                <div class="window_top_btn">X</div>
-            </div>
-        </div>
-        <div class="window_content canvas_area">
-            <canvas id="main_canvas"></canvas>
-        </div>
-        <div class="window_footer">
-            <button class="window_btn">OK</button>
-        </div>
-    </div>
+                <div class="canvas_buttons_user_wrap">
+                    <img src="images/user.jpg" alt="" class="canvas_buttons_userProfile">
+                    <span class="canvas_buttons_username">USER</span>
+                </div>
 
-    <div class="window music">
-        <div class="window_header">
-            <span class="window_name">Media Player</span>
-            <div class="window_controls">
-                <div class="window_top_btn">_</div>
-                <div class="window_top_btn">☐</div>
-                <div class="window_top_btn">X</div>
+                <div class="canvas_area_btn_wrap">
+                    <button class="window_btn">New Canvas</button>
+                    <button class="window_btn">Random Connect</button>
+                    <button class="window_btn">Custom Connect</button>
+                </div>
             </div>
+    <!--        <div class="window_footer">-->
+    <!--            &lt;!&ndash;<button class="window_btn">OK</button>&ndash;&gt;-->
+    <!--        </div>-->
         </div>
-        <div class="music_main">
-            <span class="music_display_time">02:45</span>
-            <span class="music_display_visualiser"></span>
-            <span class="music_display_track_info">Song Title - Artist Name.mp3</span>
-        </div>
-        <div class="music_controls">
-            <div class="music_controls_info">
-                <span>128kbps</span>
-                <span>44kHz</span>
-            </div>
-            <div class="music_controls_buttons">
-                <button class="music_btn mb-prev"></button>
-                <button class="music_btn mb-play"></button>
-                <button class="music_btn mb-pause"></button>
-                <button class="music_btn mb-stop"></button>
-                <button class="music_btn mb-next"></button>
-                <button class="music_btn mb-open"></button>
-            </div>
-        </div>
-    </div>
 
-    <div class="window">
-        <div class="window_header">
-            <span class="window_name">drawing_tools</span>
-            <div class="window_controls">
-                <div class="window_top_btn">_</div>
-                <div class="window_top_btn">☐</div>
-                <div class="window_top_btn">X</div>
+        <div class="window">
+            <div class="window_header">
+                <span class="window_name">canvas_area</span>
+                <div class="window_controls">
+                    <div class="window_top_btn">_</div>
+                    <div class="window_top_btn">☐</div>
+                    <div class="window_top_btn">X</div>
+                </div>
+            </div>
+            <div class="window_content canvas_area">
+                <canvas id="main_canvas"></canvas>
+            </div>
+    <!--        <div class="window_footer">-->
+    <!--            <button class="window_btn">OK</button>-->
+    <!--        </div>-->
+        </div>
+
+        <div class="window music">
+            <div class="window_header">
+                <span class="window_name">Media Player</span>
+                <div class="window_controls">
+                    <div class="window_top_btn">_</div>
+                    <div class="window_top_btn">☐</div>
+                    <div class="window_top_btn">X</div>
+                </div>
+            </div>
+            <div class="music_main">
+                <span class="music_display_time">02:45</span>
+                <span class="music_display_visualiser"></span>
+                <span class="music_display_track_info">Song Title - Artist Name.mp3</span>
+            </div>
+            <div class="music_controls">
+                <div class="music_controls_info">
+                    <span>128kbps</span>
+                    <span>44kHz</span>
+                </div>
+                <div class="music_controls_buttons">
+                    <button class="music_btn mb-prev"></button>
+                    <button class="music_btn mb-play"></button>
+                    <button class="music_btn mb-pause"></button>
+                    <button class="music_btn mb-stop"></button>
+                    <button class="music_btn mb-next"></button>
+                    <button class="music_btn mb-open"></button>
+                </div>
             </div>
         </div>
-        <div class="window_content drawing_tools">
-            <div class="draw_timer">
-                <span> COOLDOWN: </span>
-                <span> 00:00:00 </span>
-                <span> // </span>
-                <span> READY </span>
+
+        <div class="window">
+            <div class="window_header">
+                <span class="window_name">drawing_tools</span>
+                <div class="window_controls">
+                    <div class="window_top_btn">_</div>
+                    <div class="window_top_btn">☐</div>
+                    <div class="window_top_btn">X</div>
+                </div>
             </div>
-            <div class="color_picks">
-                <input type="color" name="" id="">
-                <input type="color" name="" id="">
-                <input type="color" name="" id="">
-                <input type="color" name="" id="">
+            <div class="window_content drawing_tools">
+                <div class="draw_timer">
+                    <span> COOLDOWN: </span>
+                    <span> 00:00:00 </span>
+                    <span> // </span>
+                    <span> READY </span>
+                </div>
+                <div class="color_picks">
+                    <input type="color" name="" id="">
+                    <input type="color" name="" id="">
+                    <input type="color" name="" id="">
+                    <input type="color" name="" id="">
+                </div>
             </div>
-        </div>
-        <div class="window_footer">
-            <button class="window_btn">OK</button>
+    <!--        <div class="window_footer">-->
+    <!--            <button class="window_btn">OK</button>-->
+    <!--        </div>-->
         </div>
     </div>
 </div>

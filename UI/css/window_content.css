@@ -116,20 +116,47 @@
 /* -- drawing_tools -- */
 .drawing_tools {
     display: flex;
-    justify-content: center;
-    align-items: stretch;
-    flex-direction: column;
-
-    width: 90%;
+    justify-content: space-between; /* Spreads timer and colors apart */
+    align-items: center;
+    flex-direction: row; /* Side-by-side */
+    width: 100%;
+    padding: 10px;
+    background: #111; /* Dark background for the control panel */
+    box-shadow: var(--border-inset);
+    border: none;
 }
 
 .draw_timer {
-    background-color: #333333;
-    color: crimson;
-    font-size: 3rem;
+    background-color: #000;
+    color: #ff3344; /* Eerie red */
+    font-size: 2.5rem;
+    padding: 5px 15px;
+    border: 1px solid #333;
+    border-radius: 3px;
+    /* Glow effect */
+    text-shadow: 0 0 8px rgba(255, 51, 68, 0.6);
+    letter-spacing: 2px;
 }
 
 .color_picks {
     display: flex;
-    flex-direction: row;
+    gap: 5px;
+}
+
+/* Style the color inputs to look like hardware buttons */
+.color_picks input[type="color"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 35px;
+    height: 35px;
+    border: none;
+    padding: 0;
+    box-shadow: var(--border-outset);
+    cursor: crosshair;
+}
+.color_picks input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.color_picks input[type="color"]::-webkit-color-swatch {
+    border: 1px solid #000;
 }

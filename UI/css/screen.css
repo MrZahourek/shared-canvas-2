@@ -1,0 +1,73 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--win98-blue);
+}
+
+.screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-image: radial-gradient(transparent 60%, black);
+}
+
+.content, .scan {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+}
+
+.content , .scan-bar{
+    z-index: -1;
+}
+
+.bezel {
+    box-shadow: 2px 2px 8px rgb(24, 24, 24);
+
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    opacity: 50;
+}
+
+.scan-bar {
+    height: 100%;
+    animation: scan 1.5s infinite;
+}
+
+.scan {
+    height: 20px;
+    width: 100%;
+
+    background-color: rgba(196, 196, 196, 0.445);
+
+}
+
+@keyframes scan {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* -- */
+.content {
+    background-image: url("../images/background.gif");
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+    padding: 2% 7% 4% 7%;
+}

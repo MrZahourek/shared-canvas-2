@@ -1,74 +1,58 @@
 <?php
-include "../app/controllers/conn.php";
+// app/models/User.php
 
 class User {
+    // Properties representing the database columns
+    public int $userID;
+    public string $username;
+    public string $password_hash;
+    public int $last_edit_at;
+
+    // The constructor sets up the object when you use 'new User()'
+    public function __construct($dbRow) {
+        $this->userID = $dbRow['userID'] ?? null;
+        $this->username = $dbRow['username'] ?? null;
+        $this->password_hash = $dbRow['password_hash'] ?? null;
+        $this->last_edit_at = $dbRow['last_edit_at'] ?? null;
+    }
+
+    // --- INSTANCE METHODS (Things this specific user can do) ---
+
+    // Clean password checking!
+    public function verifyPassword($password) {
+        return password_verify($password, $this->password_hash);
+    }
+
+
+    // --- STATIC METHODS (Tools to find users in the database) ---
+
     public static function findById($id, $db) {
-        return $db->runQuery(
-            "SELECT * FROM users WHERE userID = ?",
-            [$id]
-        )->fetch();
+        $row = $db->runQuery("SELECT * FROM users WHERE userID = ?", [$id])->fetch();
+        if ($row) {
+            return new User($row); // Returns a real User object!
+        }
+        return null;
     }
 
-    public static function checkName($username, $db){
-        $result = json_decode('{ "success": false, "error": [] }');
-
-        $query =  $db->runQuery(
-            "select username from users where username = ?",
-            [$username]
-        )->fetch();
-
-        if (count($query) > 0) {
-            $result->success = true;
-            $result->error = [];
-            return $result;
+    public static function findByUsername($username, $db) {
+        $row = $db->runQuery("SELECT * FROM users WHERE username = ?", [$username])->fetch();
+        if ($row) {
+            return new User($row); // Returns a real User object!
         }
-        else {
-            $result->success = false;
-            $result->error[] = "username taken";
-            return $result;
-        }
+        return null;
     }
 
-    public static function checkLogin($username, $password, $db){
-        $result = json_decode('{ "success": false, "error": [] }');
+    // Creates the user in the DB and returns the new User object
+    public static function create($username, $password, $db) {
+        // Hash the password securely
+        $hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $query = $db->runQuery(
-            "select username, password_hash from users where username = ?",
-            [$username]
-        )->fetch();
+        $db->runQuery(
+            "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+            [$username, $hash]
+        );
 
-        if (count($query) <= 0) {
-            $result->success = false;
-            $result->error[] = "user doesnt exist";
-            return $result;
-        }
-
-        if (password_verify($password, $query["password_hash"])) {
-            $result->success = true;
-            $result->error = [];
-            return $result;
-        }
-        else {
-            $result->success = false;
-            $result->error[] = "incorrect password";
-            return $result;
-        }
-
+        // Fetch and return the newly created user
+        return self::findByUsername($username, $db);
     }
-
-    public static function createUser($username, $password, $db) {}
-}
-
-$data = json_decode(file_get_contents("php://input"), true);
-$User = new User();
-$db = new Database();
-
-switch ($data["request"]) {
-    case "check login":
-        echo json_encode($User->checkLogin($data["username"], $data["password"], $db));
-        break;
-
-    case "check name":
-        echo json_encode($User->checkName($data["username"], $db));
-        break;
 }

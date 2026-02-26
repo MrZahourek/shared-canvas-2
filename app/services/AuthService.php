@@ -1,63 +1,84 @@
 <?php
-/* --
-** Here we send requests to get authentication of the user
+/* app/services/AuthService.php
+** -> Here we send requests to get authentication of the user
  *
  * todo:
  * - new user maker
  * - check login
  * - token security
 */
-include "../app/controllers/conn.php";
 include "../app/services/TokenService.php";
-include "../app/models/User.php";
+
+require_once "../app/controllers/conn.php";
+require_once "../app/models/User.php";
 
 // Initialize Database
 $db = new Database();
 
-// Get the JSON data sent from userEntry.js
+// Get the JSON data sent from fetch
 $data = json_decode(file_get_contents("php://input"), true);
 
-function authSession($db, $username, $password) {
-    // 1. make sure the password and username match
+$response = ["success" => false, "errorList" => []];
 
-    // 2. check the tokens
-    $tokens = getTokens();
-    if ($tokens->refresh != "") {
-        // hash token
-        $token_hash = hash('sha256', $tokens->refresh);
+function getUserID ($db) {
+    $result = (object) ['success' => false, 'userID' => null];
 
-        // get user id from database
-        $last_session = $db->runQuery(
-            "select * from active_sessions where refresh_token_hash = ?",
-            [$token_hash]
-        )->fetch();
+    // 1. get access
+    $accessToken = getToken("access");
 
-        // compare username thats getting authenticated to the one from session
-        $last_user = User::findById($last_session["userID"], $db);
-
-        if ($last_user["username"] == $username) {
-            // the user is same and we can refresh the refresh token and make new access token
-        }
-        else {
-            // the user is not the same and its time to generate new session
-        }
-    }
-    else {
-        // tokens are expired and new session has to be made
+    // 2. if no access make new access
+    if (!$accessToken["success"]) {
+        generateToken("access", $db);
+        $accessToken = getToken("access");
     }
 
-    // session is ready
+    // 3. get userID with access
+    $session = $db->runQuery(
+        "select * from active_sessions where access_token_hash = ?",
+        [hash('sha256', $accessToken["token"])]
+    )->fetch();
+
+    // 4. update last_use
+    $db->runQuery("update active_sessions set last_use = ? where access_token_hash = ?", [time(), hash('sha256', $accessToken["token"])]);
+
+    $result->success = true;
+    $result->userID = $session["userID"];
+    return $result;
 }
 
-// # Creating user
+// --- LOGIN FLOW ---
+if ($data["authType"] == "login") {
 
-if ($data["new user"]) {
-    // create user
+    // 1. Find the user object
+    $user = User::findByUsername($data["username"], $db);
 
-    // auth session
+    // 2. Check if they exist AND if the password matches using our new method
+    if ($user && $user->verifyPassword($data["password"])) {
+
+        $response["success"] = true;
+        // Proceed to generate session tokens using $user->userID ...
+
+    } else {
+        $response["errorList"][] = "Invalid username or password.";
+    }
+
+// --- NEW USER FLOW ---
+} else if ($data["authType"] == "newUser") {
+
+    // 1. Check if name is taken
+    $existingUser = User::findByUsername($data["username"], $db);
+
+    if ($existingUser) {
+        $response["errorList"][] = "Username is already taken.";
+    } else {
+        // 2. Create the user
+        $newUser = User::create($data["username"], $data["password"], $db);
+
+        $response["success"] = true;
+        // Proceed to generate session tokens using $newUser->userID ...
+    }
 }
-else {
-    // logging in
 
-    // auth session
-}
+// end of code
+echo json_encode($response);
+exit;

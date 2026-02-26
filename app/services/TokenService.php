@@ -6,64 +6,71 @@
  * - auth token generation
  * - regen token generation
 */
-include "../app/controllers/conn.php";
 
-$data = json_decode(file_get_contents("php://input"), true);
-$db = new Database();
+// token functions
+function getToken($type) {
+    $result = (object) ['success' => false, 'token' => null];
 
-function getTokens() {
-    $result = json_decode('{ "access": "", "refresh": "" }');
+    if (isset($_COOKIE[$type . "_token"])) {
+        $result->token =  $_COOKIE[$type . "_token"];
+        $result->success = true;
+    }
+    return $result;
+}
+function refreshToken($type, $db) {
+    $result = (object) ['success' => false, 'error' => null];
 
-    if (isset($_COOKIE["access_token"])) {}
-    else {}
+    $rawToken = getToken($type);
+    if (!$rawToken["success"]) {
+        $result->error = "token not found";
+        die ($result);
+    }
 
-    if (isset($_COOKIE["refresh_token"])) {}
-    else {}
+    $expiration = 0;
+    if ($type == "access") { $expiration = time() + (60 * 25); }
+    else { $expiration = time() + (3600 * 24 * 5); }
+
+    setcookie($type . "_token", $rawToken["token"], $expiration);
+    $db->runQuery(
+        `update active_sessions set ${$type . "_token_expire"} = ? where ${$type . "_token_hash"} = ?`,
+        [$expiration, hash('sha256', $rawToken["token"])]
+    );
+
+    $result->success = true;
 
     return $result;
 }
 
-function createToken($tokenType) {}
+function generateToken($type, $db) {
+    $tokenCreated = false;
+    while (!$tokenCreated) {
+        // get new token
+        $rawToken = bin2hex(random_bytes(32));
+        $hashToken = hash('sha256', $rawToken);
 
-function refreshToken($tokenType) {}
+        $expiration = 0;
+        if ($type == "access") { $expiration = time() + (60 * 25); }
+        else { $expiration = time() + (3600 * 24 * 5); }
 
+        $sql = `select * from active_sessions where ${$type . "_token_hash"} = ?`;
+        $check = $db->runQuery($sql, [$hashToken]) -> fetch();
 
+        if (empty($check)) {
+            setcookie($type . "_token", $rawToken, $expiration);
+            $sql = "";
+            $second_token = "";
+            if ($type == "access") {
+                $sql = "update active_sessions set access_token_hash = ? set access_token_expire = ? where refresh_token_hash = ?";
+                $second_token = $_COOKIE["refresh_token"];
+            }
+            else {
+                $sql = "update active_sessions set refresh_token_hash = ? set refresh_token_expire = ? where access_token_hash = ?";
+                $second_token = $_COOKIE["access_token"];
+            }
 
-//function generateToken($tokenType, $db = new Database()) {
-//    if ($tokenType == "access") {
-//        // generate access token and update the db
-//    }
-//    elseif ($tokenType == "refresh") {
-//        // generate refresh token and update the db
-//    }
-//    else {
-//        // generate both
-//    }
-//}
-//
-//function refreshToken($tokenType, $db = new Database()) {
-//    if ($tokenType == "access") {
-//        // set new value for expiration of access token and update the db
-//        $newExpiration = time() + (60 * 25); // in 25 min
-//        // update cookie
-//
-//        // update db
-//    }
-//    elseif ($tokenType == "refresh") {
-//        // set new value for expiration of refresh token and update the db
-//        $newExpiration = time() + (60 * 60 * 24 * 5); // in 5 days
-//        $token = $_COOKIE["refresh token"];
-//
-//        // update cookie
-//        setcookie("refresh token", $token, $newExpiration);
-//
-//        // update db
-//        $hash = password_hash($token, PASSWORD_DEFAULT);
-//        $sql = "update active_sessions set refresh_token_expire = :time where refresh_token_hash = :hash";
-//        $stmt = $db->runQuery($sql, ['time' => $newExpiration, 'hash' => $hash]);
-//
-//    }
-//    else {
-//        // generate both
-//    }
-//}
+            $db->runQuery($sql, [$hashToken, $expiration, hash('sha256', $second_token)]);
+            $tokenCreated = true;
+        }
+    }
+    return true;
+}

@@ -1,9 +1,0 @@
-{
-  "canvas_name": "global",
-  "canvas_width": 64,
-  "canvas_height": 64,
-  "canvas_scale": 10,
-  "canvas_background": "#ffffff",
-  "canvas_wait_time": 300000,
-  "canvas_edit_limit": 50
-}

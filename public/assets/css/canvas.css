@@ -1,0 +1,48 @@
+/* Container for the timer */
+#timer_wrap {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 25px;
+    font-family: sans-serif;
+    z-index: 100;
+}
+
+/* Timer state: Loading (Waiting) */
+#timer_time.loading {
+    color: #ff4d4d; /* Reddish */
+}
+
+/* Timer state: Ready */
+#timer_time.ready {
+    color: #4df3ff; /* Cyan/Blue */
+}
+
+/* Canvas Styling */
+canvas {
+    border: 2px solid #333;
+    display: block;
+    margin: 60px auto;
+    image-rendering: pixelated; /* Keeps pixels sharp */
+    cursor: crosshair;
+    transition: filter 0.3s ease;
+}
+
+/* When the user MUST wait */
+canvas.loading {
+    filter: grayscale(0.8) blur(1px);
+    pointer-events: none; /* Physically prevents clicks */
+    opacity: 0.7;
+}
+
+/* When the user CAN draw */
+canvas.ready {
+    filter: none;
+    pointer-events: auto;
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(77, 243, 255, 0.3);
+}

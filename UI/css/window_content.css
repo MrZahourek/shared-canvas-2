@@ -21,8 +21,6 @@
     align-items: center;
     text-align: center;
 
-    border: 2px solid black;
-
     font-family: "VT323", monospace;
 }
 
@@ -37,8 +35,6 @@
 }
 
 .canvas_buttons_user_wrap {
-    /*border: 2px forestgreen solid;*/
-
     margin-bottom: 5%;
 
     display: flex;
@@ -68,8 +64,6 @@
 
 .canvas_area_btn_wrap {
     width: 75%;
-
-    /*border: 2px solid crimson;*/
 
     flex-direction: column;
 }
@@ -119,7 +113,7 @@
     justify-content: space-between; /* Spreads timer and colors apart */
     align-items: center;
     flex-direction: row; /* Side-by-side */
-    width: 100%;
+    width: inherit;
     padding: 10px;
     background: #111; /* Dark background for the control panel */
     box-shadow: var(--border-inset);
@@ -131,8 +125,6 @@
     color: #ff3344; /* Eerie red */
     font-size: 2.5rem;
     padding: 5px 15px;
-    border: 1px solid #333;
-    border-radius: 3px;
     /* Glow effect */
     text-shadow: 0 0 8px rgba(255, 51, 68, 0.6);
     letter-spacing: 2px;

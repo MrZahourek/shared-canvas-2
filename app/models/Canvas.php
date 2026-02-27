@@ -1,6 +1,7 @@
 <?php
 
 class Canvas {
+
     public static function findByName($name, $db) {
         return $db->runQuery(
             "SELECT * FROM canvas_configs WHERE canvas_name = ?",

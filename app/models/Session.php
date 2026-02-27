@@ -76,4 +76,30 @@ class Session {
     public static function cleanupExpired($db) {
         $db->runQuery("DELETE FROM active_sessions WHERE refresh_token_expire < NOW()");
     }
+
+    // 5. Verify Access Token (Used on every single canvas click)
+    public static function verifyAccessToken($rawAccessToken, $db) {
+        if (!$rawAccessToken) return false;
+
+        $hash = hash('sha256', $rawAccessToken);
+
+        // Find the session and make sure the access token hasn't expired
+        $session = $db->runQuery(
+            "SELECT userID FROM active_sessions WHERE access_token_hash = ? AND access_token_expire > NOW()",
+            [$hash]
+        )->fetch();
+
+        // If it exists and is valid, return the userID! Otherwise, return false.
+        return $session ? $session['userID'] : false;
+    }
+
+    // 6. Logout (Destroys the session in the database)
+    public static function logout($rawRefreshToken, $db) {
+        if (!$rawRefreshToken) return;
+
+        $hash = hash('sha256', $rawRefreshToken);
+
+        // Nuke the session from the database so it can never be used again
+        $db->runQuery("DELETE FROM active_sessions WHERE refresh_token_hash = ?", [$hash]);
+    }
 }

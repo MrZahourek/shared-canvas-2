@@ -18,36 +18,8 @@ function scale() {
 }
 
 // php functions
-async function authenticate() {
-    let url = "../app/actions/Auth.php"
-    let auth;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({})
-        });
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        auth = await response.json();
-    } catch (error) {
-        console.error(error.message);
-    }
-}
 
 async function getUserData() {
-    // authenticate
-    const auth = await authenticate();
-
-    if (!auth.success) {
-        console.error("auth fail");
-        return 0;
-    }
-
-    // get user data
     let url = "../app/models/User.php";
     let user;
     try {
@@ -216,24 +188,29 @@ async function clickHandler(event) {
 
 // Window - load
 window.addEventListener("load", async (event) => {
-    // hide canvas
-    canvas.style.display = "none";
+    // 1. hide canvas so the change isnt as sharp
+    canvas.style.visibility = "hidden";
 
-    // config
-    await getCanvasConfig()
-        .then(() => {scale();})
-        .then(() => {
-            ctx.fillStyle = localStorage.getItem("canvas_background");
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        });
+    // 2. get canvas config file
 
-    // get snap and edits
-    await draw( await getSnapshot() );
+    // 3. load into local storage
 
-    await draw( await getEdits() );
+    // 4. scale the canvas / add background color / etc..
 
-    // set the timer
+    // 5. get latest canvas snapshot
 
-    // show canvas
-    canvas.style.display = "block";
+    // 6. draw snap edits
+
+    // 7. get edits that are out of snapshot
+
+    // 8. draw later edits
+
+    // 9. get user data
+
+    // -> last user edit & canvas wait period ... active cooldown
+
+    // -> show username
+
+    // 10. show canvas
+    canvas.style.visibility = "visible";
 })

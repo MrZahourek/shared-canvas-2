@@ -1,10 +1,9 @@
 <?php
 // app/services/AuthService.php
+require_once dirname(__DIR__) . "/controllers/conn.php";
+require_once dirname(__DIR__) .  "/models/User.php";
+require_once dirname(__DIR__) . "/models/Session.php";
 
-include "../app/services/TokenService.php";
-require_once "../app/controllers/conn.php";
-require_once "../app/models/User.php";
-require_once "../app/models/Session.php";
 
 // Initialize Database
 $db = new Database();

@@ -2,11 +2,12 @@
 // app/models/User.php
 
 class User {
-    // Properties representing the database columns
-    public int $userID;
-    public string $username;
-    public string $password_hash;
-    public int $last_edit_at;
+    // Adding the '?' makes them "nullable", meaning they are allowed to be empty/null!
+    // Also changed last_edit_at to string since MySQL timestamps look like "2026-02-25 14:30:00"
+    public ?int $userID;
+    public ?string $username;
+    public ?string $password_hash;
+    public ?string $last_edit_at;
 
     // The constructor sets up the object when you use 'new User()'
     public function __construct($dbRow) {

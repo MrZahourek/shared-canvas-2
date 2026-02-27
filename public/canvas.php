@@ -128,5 +128,6 @@
 </div>
 
 <script src="assets/js/canvasManager.js"></script>
+<script src="assets/js/musicPlayer.js"></script>
 </body>
 </html>

@@ -35,10 +35,15 @@ $user = User::findById($userID, $db);
 
 
 // 4. user approved
-$response = (object) ["success" => false, "action" => "wait", "editData" => []];
+$data = $data = json_decode(file_get_contents("php://input"), true);
 
-// -> check time
+if ($data["action"] == "init") {
+    // 1. canvas config
+    // 2. canvas latest snapshot
+    // 3. canvas getEdits
+    // 4. user data
 
-// -> prepare edit
 
-// -> die
+}
+
+else if ($data["action"] == "new edit") {}

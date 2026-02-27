@@ -16,26 +16,31 @@ loginForm.addEventListener("submit", async (e) => {
 
     // 2. use AuthService.php to try login
     let url = "../app/services/AuthService.php";
-    let authResult;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username: userInput.username, password: userInput.password, authType: "login"})
-        });
+    let authResult = async () => {
+        let auth;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username: userInput.username, password: userInput.password, authType: "newUser"})
+            });
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            auth = await response.json();
+        } catch (error) {
+            console.error(error.message);
         }
 
-        authResult = await response.json();
-    } catch (error) {
-        console.error(error.message);
-    }
+        return (auth);
+    };
 
     // 3. handle data
-    if (!authResult.success) {
+    if (!authResult().success) {
         // auth failed ... show errors
+        console.error(authResult().errorList);
     }
     else {
         // auth success ... redirect
@@ -64,26 +69,31 @@ newUserForm.addEventListener("submit", async (e) => {
     else {
         // -> password match ...  use AuthService.php to try make account
         let url = "../app/services/AuthService.php";
-        let authResult;
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({username: userInput.username, password: userInput.password, authType: "newUser"})
-            });
+        let authResult = async () => {
+            let auth;
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({username: userInput.username, password: userInput.password, authType: "newUser"})
+                });
 
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+
+                auth = await response.json();
+            } catch (error) {
+                console.error(error.message);
             }
 
-            authResult = await response.json();
-        } catch (error) {
-            console.error(error.message);
-        }
+            return (auth);
+        };
 
         // 3. handle data
-        if (!authResult.success) {
+        if (!authResult().success) {
             // auth failed ... show errors
+            console.error(authResult().errorList);
         }
         else {
             // auth success ... redirect

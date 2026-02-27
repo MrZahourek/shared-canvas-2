@@ -42,6 +42,6 @@
     <input type="text" placeholder="global" id="canvasNameInput">
 </div>
 
-<script src="assets/js/userEntry.js"></script>
+<script src="assets/js/userEntry.js?v=1.2"></script>
 </body>
 </html>

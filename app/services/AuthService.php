@@ -26,7 +26,7 @@ if ($data["authType"] == "login") {
         $refresh_token = $_COOKIE["refresh_token"] ?? null;
         if (empty($refresh_token)) {
             // -> no token found ... make new session
-            $tokens = Session::create($user["userID"], $db);
+            $tokens = Session::create($user->userID, $db);
 
             // ... Do a little database cleanup while we are here
             Session::cleanupExpired($db);

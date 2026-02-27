@@ -3,57 +3,45 @@
 const loginForm = document.getElementById("LogUserForm");
 const newUserForm = document.getElementById("NewUserForm");
 
-// # Functions
+// # Listeners
 
-async function sendData(type, username, password) {
-    const url = "../app/services/AuthService.php";
-    let result;
+// login
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    // 1. get input variables
+    const userInput = {
+        username: document.getElementById("LogUsername").value,
+        password: document.getElementById("LogPass").value
+    }
 
+    // 2. use AuthService.php to try login
+    let url = "../app/services/AuthService.php";
+    let authResult;
     try {
         const response = await fetch(url, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({authType: type, username: username, password: password})
+            body: JSON.stringify({username: userInput.username, password: userInput.password, authType: "login"})
         });
 
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
 
-        result = await response.json();
+        authResult = await response.json();
     } catch (error) {
         console.error(error.message);
     }
 
-    return(result);
-}
-
-// # Listeners
-
-// login
-loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    // variables
-    const userInput = {
-        username: document.getElementById("LogUsername").value,
-        password: document.getElementById("LogPass").value
-    }
-
-    // go check if correct
-    const authResult = await sendData("login", userInput.username, userInput.password);
-
-    // show error
+    // 3. handle data
     if (!authResult.success) {
-        const errorList = document.getElementById("LogErrors");
-        for (const error of authResult.errorList) {
-            let errorText = document.createElement("li");
-            errorText.innerText = error;
-            errorText.classList.add("error");
-            errorList.appendChild(errorText);
-        }
+        // auth failed ... show errors
     }
     else {
-        localStorage.setItem("canvas name", document.getElementById("canvasNameInput").value);
+        // auth success ... redirect
+        let targetCanvas = document.getElementById("canvasNameInput").value ?? "global";
+        localStorage.setItem("canvas name", targetCanvas);
+
         // redirect
         window.location.href = "../public/canvas.php";
     }
@@ -62,28 +50,48 @@ loginForm.addEventListener("submit", async (e) => {
 // new user
 newUserForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    // variables
+    // 1. get input variables
     const userInput = {
         username: document.getElementById("NewUsername").value,
-        password: document.getElementById("NewPass").value
-    }
+        password: document.getElementById("NewPass").value,
+        passwordCheck: document.getElementById("NewPassCheck").value
+    };
 
-    // go check if correct
-    const authResult = await sendData("newUser", userInput.username, userInput.password);
-
-    // show error
-    if (!authResult.success) {
-        const errorList = document.getElementById("NewUserErrors");
-        for (const error of authResult.errorList) {
-            let errorText = document.createElement("li");
-            errorText.innerText = error;
-            errorText.classList.add("error");
-            errorList.appendChild(errorText);
-        }
+    // 2. Check if the passwords match each other
+    if (userInput.password !== userInput.passwordCheck) {
+        // -> passwords dont match ... display error
     }
     else {
-        localStorage.setItem("canvas_name", document.getElementById("canvasNameInput").value);
-        // redirect
-        window.location.href = "../public/canvas.php";
+        // -> password match ...  use AuthService.php to try make account
+        let url = "../app/services/AuthService.php";
+        let authResult;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username: userInput.username, password: userInput.password, authType: "newUser"})
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            authResult = await response.json();
+        } catch (error) {
+            console.error(error.message);
+        }
+
+        // 3. handle data
+        if (!authResult.success) {
+            // auth failed ... show errors
+        }
+        else {
+            // auth success ... redirect
+            let targetCanvas = document.getElementById("canvasNameInput").value ?? "global";
+            localStorage.setItem("canvas name", targetCanvas);
+
+            // redirect
+            window.location.href = "../public/canvas.php";
+        }
     }
 });

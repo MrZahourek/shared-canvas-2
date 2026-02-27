@@ -1,16 +1,10 @@
 <?php
-/* app/services/AuthService.php
-** -> Here we send requests to get authentication of the user
- *
- * todo:
- * - new user maker
- * - check login
- * - token security
-*/
-include "../app/services/TokenService.php";
+// app/services/AuthService.php
 
+include "../app/services/TokenService.php";
 require_once "../app/controllers/conn.php";
 require_once "../app/models/User.php";
+require_once "../app/models/Session.php";
 
 // Initialize Database
 $db = new Database();
@@ -20,32 +14,6 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 $response = ["success" => false, "errorList" => []];
 
-function getUserID ($db) {
-    $result = (object) ['success' => false, 'userID' => null];
-
-    // 1. get access
-    $accessToken = getToken("access");
-
-    // 2. if no access make new access
-    if (!$accessToken["success"]) {
-        generateToken("access", $db);
-        $accessToken = getToken("access");
-    }
-
-    // 3. get userID with access
-    $session = $db->runQuery(
-        "select * from active_sessions where access_token_hash = ?",
-        [hash('sha256', $accessToken["token"])]
-    )->fetch();
-
-    // 4. update last_use
-    $db->runQuery("update active_sessions set last_use = ? where access_token_hash = ?", [time(), hash('sha256', $accessToken["token"])]);
-
-    $result->success = true;
-    $result->userID = $session["userID"];
-    return $result;
-}
-
 // --- LOGIN FLOW ---
 if ($data["authType"] == "login") {
 
@@ -54,12 +22,49 @@ if ($data["authType"] == "login") {
 
     // 2. Check if they exist AND if the password matches using our new method
     if ($user && $user->verifyPassword($data["password"])) {
+        // -> user login data correct ... try to look for refresh cooke
+
+        $refresh_token = $_COOKIE["refresh_token"] ?? null;
+        if (empty($refresh_token)) {
+            // -> no token found ... make new session
+            $tokens = Session::create($user["userID"], $db);
+
+            // ... Do a little database cleanup while we are here
+            Session::cleanupExpired($db);
+
+            // ... Send the tokens to the browser cookies
+            setcookie("access_token", $tokens['access'], time() + (15 * 60), "/", "", false, true); // HttpOnly cookie
+            setcookie("refresh_token", $tokens['refresh'], time() + (7 * 24 * 60 * 60), "/", "", false, true);
+        }
+        else {
+            // -> token found ... refresh old session
+            // clean old sessions
+            Session::cleanupExpired($db);
+
+            // refresh
+            $tokens = Session::refresh($refresh_token, $db);
+
+            if (!empty($tokens["refresh"]) && !empty($tokens["access"])) {
+                // ... Send the tokens to the browser cookies
+                setcookie("access_token", $tokens['access'], time() + (15 * 60), "/", "", false, true); // HttpOnly cookie
+                setcookie("refresh_token", $tokens['refresh'], time() + (7 * 24 * 60 * 60), "/", "", false, true);
+            }
+            else {
+                // -> invalid token
+                $response['errorList'][] = "Invalid session token";
+            }
+        }
 
         $response["success"] = true;
-        // Proceed to generate session tokens using $user->userID ...
 
     } else {
-        $response["errorList"][] = "Invalid username or password.";
+        // -> user login data wrong ... die and send errors
+        if (empty($user)) {
+            $response["errorList"][] = "User not found";
+        }
+        elseif (!$user->verifyPassword($data["password"])) {
+            $response["errorList"][] = "Incorrect password";
+        }
     }
 
 // --- NEW USER FLOW ---
@@ -74,8 +79,17 @@ if ($data["authType"] == "login") {
         // 2. Create the user
         $newUser = User::create($data["username"], $data["password"], $db);
 
+        // -> new user ... make new session
+        $tokens = Session::create($newUser["userID"], $db);
+
+        // ... Do a little database cleanup while we are here
+        Session::cleanupExpired($db);
+
+        // ... Send the tokens to the browser cookies
+        setcookie("access_token", $tokens['access'], time() + (15 * 60), "/", "", false, true); // HttpOnly cookie
+        setcookie("refresh_token", $tokens['refresh'], time() + (7 * 24 * 60 * 60), "/", "", false, true);
+
         $response["success"] = true;
-        // Proceed to generate session tokens using $newUser->userID ...
     }
 }
 

@@ -2,28 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas | Shared Canvas</title>
+    <title>Win98 Window</title>
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&family=Workbench:BLED,SCAN@30,-2&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="assets/css/window.css">
-    <link rel="stylesheet" href="assets/css/grid.css">
-    <link rel="stylesheet" href="assets/css/window_content.css">
-    <link rel="stylesheet" href="assets/css/music.css">
-    <link rel="stylesheet" href="assets/css/screen.css">
-    <link rel="stylesheet" href="assets/css/canvas.css">
+    <link rel="stylesheet" href="css/window.css">
+    <link rel="stylesheet" href="css/grid.css">
+    <link rel="stylesheet" href="css/window_content.css">
+    <link rel="stylesheet" href="css/music.css">
+    <link rel="stylesheet" href="css/screen.css">
+
 </head>
 <body>
 
+<!-- screen effect -->
 <div class="screen">
-    <img src="assets/images/bezel.png" alt="" class="bezel">
+    <img src="./images/bezel.png" alt="" class="bezel">
     <div class="scan-bar">
         <div class="scan"></div>
     </div>
-
     <div id="grid_wrap" class="content">
 
         <div class="window" style="height: 95%">
@@ -36,9 +37,10 @@
                 </div>
             </div>
             <div class="window_content canvas_buttons">
+
                 <div class="canvas_buttons_user_wrap">
                     <div class="profile_img_container">
-                        <img src="assets/images/user.jpg" alt="" class="canvas_buttons_userProfile">
+                        <img src="images/user.jpg" alt="" class="canvas_buttons_userProfile">
                         <div class="profile_glitch_overlay"></div>
                     </div>
                     <span class="canvas_buttons_username">USER_994</span>
@@ -51,6 +53,9 @@
                     <button class="window_btn">Custom Connect</button>
                 </div>
             </div>
+    <!--        <div class="window_footer">-->
+    <!--            &lt;!&ndash;<button class="window_btn">OK</button>&ndash;&gt;-->
+    <!--        </div>-->
         </div>
 
         <div class="window">
@@ -63,8 +68,11 @@
                 </div>
             </div>
             <div class="window_content canvas_area">
-                <canvas id="canvas" class="loading"></canvas>
+                <canvas id="main_canvas"></canvas>
             </div>
+    <!--        <div class="window_footer">-->
+    <!--            <button class="window_btn">OK</button>-->
+    <!--        </div>-->
         </div>
 
         <div class="window music">
@@ -110,23 +118,25 @@
                 </div>
             </div>
             <div class="window_content drawing_tools">
-                <div class="draw_timer" id="timer_wrap">
+                <div class="draw_timer">
                     <span> COOLDOWN: </span>
-                    <span id="timer_time" class="loading"> 00:00:00 </span>
+                    <span> 00:00:00 </span>
                     <span> // </span>
                     <span> READY </span>
                 </div>
                 <div class="color_picks">
-                    <input type="color" id="color_input">
+                    <input type="color" name="" id="">
                     <input type="color" name="" id="">
                     <input type="color" name="" id="">
                     <input type="color" name="" id="">
                 </div>
             </div>
+    <!--        <div class="window_footer">-->
+    <!--            <button class="window_btn">OK</button>-->
+    <!--        </div>-->
         </div>
     </div>
 </div>
 
-<script src="assets/js/canvasManager.js"></script>
 </body>
 </html>

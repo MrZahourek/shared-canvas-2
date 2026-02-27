@@ -129,7 +129,7 @@ async function getSnapshot() {
 }
 
 async function getEdits() {
-    let url = ";
+    let url = "../app/services/CanvasService.php";
     let pixelData;
     try {
         const response = await fetch(url, {

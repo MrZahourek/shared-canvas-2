@@ -34,8 +34,8 @@ body {
     gap: 4px;
     user-select: none; /* Makes it feel more like an app */
 
-    position: absolute;
-    top: calc(-5vh + 15px);
+    /*position: absolute;*/
+    /*top: calc(-5vh + 15px);*/
 }
 
 /* --- TITLE BAR --- */
@@ -65,21 +65,29 @@ body {
 
 
 /* --- MAIN BLACK DISPLAY AREA --- */
-.music_main {
-    background: var(--win98-dark);
-    /* The sunken effect */
-    box-shadow: var(--border-inset);
-    padding: 6px;
-    height: 105px;
-    /* Using Grid to lay out the timer vs info areas */
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 4px 10px;
-    align-items: center;
+/*.music_main {*/
+/*    background: var(--win98-dark);*/
+/*    !* The sunken effect *!*/
+/*    box-shadow: var(--border-inset);*/
+/*    padding: 6px;*/
+/*    height: 105px;*/
+/*    !* Using Grid to lay out the timer vs info areas *!*/
+/*    display: grid;*/
+/*    grid-template-columns: auto 1fr;*/
+/*    grid-template-rows: 1fr 1fr;*/
+/*    gap: 4px 10px;*/
+/*    align-items: center;*/
 
-    position: relative;
-    z-index: 1;
+/*    position: relative;*/
+/*    z-index: 1;*/
+/*}*/
+.music_main {
+    /* Modify your existing .music_main to use flexbox */
+    display: flex;
+    flex-direction: row; /* Side by side */
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
 }
 
 .music_main:before {
@@ -207,3 +215,22 @@ body {
 .mb-stop::after { content: "⏹"; }
 .mb-next::after { content: "⏭"; font-size: 12px; }
 .mb-open::after { content: "⏏"; }
+
+
+#music_album_art {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #333;
+    object-fit: cover;
+    /* Gives the album art a slightly washed-out, creepy CRT look */
+    filter: grayscale(0.6) sepia(0.2) contrast(1.2);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+}
+
+.music_main_text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+}

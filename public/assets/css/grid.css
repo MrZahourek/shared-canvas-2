@@ -9,28 +9,30 @@
     /* Left column fixed width, right column flexible */
     grid-template-columns: 280px 1fr;
     /* Top row flexible, bottom row hugs its content */
-    grid-template-rows: 1fr auto;
+    grid-template-rows: 2fr 2fr 1fr;
     gap: 15px;
 
     /* This physically draws your layout! */
     grid-template-areas:
         "nav canvas"
+        "connect canvas"
         "music tools";
 }
 
 /* Assigning the windows to their grid areas */
 .window:nth-child(1) { grid-area: nav; }
-.window:nth-child(2) {
+.window:nth-child(2) { grid-area: connect}
+.window:nth-child(3) {
     grid-area: canvas;
     display: flex;
     flex-direction: column;
 }
-.window.music { grid-area: music; }
-.window:nth-child(4) { grid-area: tools; }
+.window:nth-child(4) { grid-area: music; }
+.window:nth-child(5) { grid-area: tools; }
 
 /* Make the canvas stretch to fill its window */
 .canvas_area {
-    flex-grow: 1;
+    /*flex-grow: 1;*/
     margin: 0;
     padding: 0;
     background-color: #fff; /* Placeholder for your actual canvas */

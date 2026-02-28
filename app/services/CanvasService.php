@@ -3,6 +3,7 @@
 require_once dirname(__DIR__) . "/controllers/conn.php";
 require_once dirname(__DIR__) .  "/models/User.php";
 require_once dirname(__DIR__) . "/models/Session.php";
+require_once dirname(__DIR__) . "/models/Canvas.php";
 
 $db = new Database();
 
@@ -28,9 +29,13 @@ if (!$userID) {
     }
 }
 
-// 2.  if new access created
+// 2. THE BOUNCER. If $userID is STILL false, kick them out cleanly!
+if (!$userID) {
+    echo json_encode(["success" => false, "error" => "unauthorized"]);
+    exit;
+}
 
-// 3: Success! We securely know who this is.
+//3.  Success! We securely know who this is.
 $user = User::findById($userID, $db);
 
 
@@ -44,9 +49,10 @@ if ($data["action"] == "init") {
     // 3. canvas getEdits
     // 4. user data
     $canvasData = Canvas::getInit($data["canvasName"], $db);
-    $userData = User::getInit();
+    $userData = $user->getInit();
 
     $result = [
+        "success" => true,
         "canvas_config" => $canvasData["config"],
         "canvas_snapshot" => $canvasData["snapshot"],
         "canvas_recent_edits" => $canvasData["recent_edits"],
@@ -58,5 +64,7 @@ if ($data["action"] == "init") {
 
 else if ($data["action"] == "new edit") {}
 
+
+// 5. send data
 echo json_encode($result);
 exit;

@@ -9,6 +9,7 @@
     --border-inset: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
     --border-outset-inverse: -1px -1px #0a0a0a, 1px 1px #fff, -2px -2px #808080, 2px 2px #dfdfdf;
     --border-inset-inverse: -1px -1px #fff, 1px 1px #0a0a0a, -2px -2px #dfdfdf, inset 2px 2px #808080;
+
 }
 
 /* WINDOW CONTENT */
@@ -161,19 +162,36 @@
     border: none;
 }
 
+/* --- Timer Base --- */
 .draw_timer {
     background-color: #000;
-    color: #ff3344; /* Eerie red */
+    color: #ff3344; /* Default eerie red */
     font-size: 2.5rem;
     padding: 5px 15px;
-    /* Glow effect */
-    text-shadow: 0 0 8px rgba(255, 51, 68, 0.6);
     letter-spacing: 2px;
+    border: 1px solid #333;
+
+    /* The Magic CSS Variable! It defaults to 0% if not set */
+    background: linear-gradient(to right, rgba(0, 255, 0, 0.2) var(--progress, 0%), #000 var(--progress, 0%));
 }
 
-.color_picks {
-    display: flex;
-    gap: 5px;
+/* --- Timer Loading State --- */
+.draw_timer.loading {
+    box-shadow: none;
+}
+.draw_timer.loading #timer_status {
+    color: #ff3344;
+    text-shadow: 0 0 8px rgba(255, 51, 68, 0.6);
+}
+
+/* --- Timer Ready State --- */
+.draw_timer.ready {
+    background: rgba(0, 255, 0, 0.2); /* Overrides the gradient */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.4); /* The green glow */
+}
+.draw_timer.ready #timer_status {
+    color: #00ff00;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
 }
 
 /* Style the color inputs to look like hardware buttons */

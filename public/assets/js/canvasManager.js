@@ -2,6 +2,9 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+let canvasConfig = null;
+let scale, width, height;
+
 // # Functions
 
 // canvas functions
@@ -12,149 +15,82 @@ function draw(pixelData) {
     }
 }
 
-function scale() {
-    canvas.width = localStorage.getItem("canvas_width") * localStorage.getItem("canvas_scale");
-    canvas.height = localStorage.getItem("canvas_height") * localStorage.getItem("canvas_scale");
+function scaleCanvas() {
+    scale = localStorage.getItem("canvas_scale");
+    width = localStorage.getItem("canvas_width");
+    height = localStorage.getItem("canvas_height");
+
+    // logical resolution
+    canvas.width = width;
+    canvas.height = height;
+
+    // style resolution
+    canvas.style.width = width * scale + "px";
+    canvas.style.height = height * scale + "px";
+
+    // 1. Tells the CSS renderer to use blocky nearest-neighbor scaling
+    canvas.style.imageRendering = "pixelated";
+    // 2. Tells the Canvas 2D context to stop blurring shapes when drawing
+    ctx.imageSmoothingEnabled = false;
 }
 
-// php functions
+// css functions
+function startCooldownTimer(lastEditMs, waitTimeMs) {
+    const timerWrap = document.getElementById("timer_wrap");
+    const timerTime = document.getElementById("timer_time");
+    const timerStatus = document.getElementById("timer_status");
 
-async function getUserData() {
-    let url = "../app/models/User.php";
-    let user;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({})
-        });
+    // If it's a brand new user (null), set their last edit to 0 so they are instantly ready
+    lastEditMs = lastEditMs ? lastEditMs : 0;
 
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+    const timerInterval = setInterval(() => {
+        const now = Date.now();
+        const elapsedMs = now - lastEditMs;
+        const remainingMs = waitTimeMs - elapsedMs;
+
+        if (remainingMs <= 0) {
+            // --- TIMER IS DONE ---
+            clearInterval(timerInterval);
+            timerTime.innerText = "00:00:00";
+            timerStatus.innerText = "READY";
+
+            // Switch CSS classes
+            timerWrap.classList.remove("loading");
+            timerWrap.classList.add("ready");
+
+            canvas.classList.remove("loading");
+            canvas.classList.add("ready");
+
+        } else {
+            // --- TIMER IS RUNNING ---
+            const mins = Math.floor(remainingMs / 60000);
+            const secs = Math.floor((remainingMs % 60000) / 1000);
+            const ms = Math.floor((remainingMs % 1000) / 10);
+
+            timerTime.innerText =
+                (mins < 10 ? "0" : "") + mins + ":" +
+                (secs < 10 ? "0" : "") + secs + ":" +
+                (ms < 10 ? "0" : "") + ms;
+
+            timerStatus.innerText = "LOADING...";
+
+            // Calculate the percentage
+            const progressPct = (elapsedMs / waitTimeMs) * 100;
+
+            // Update the CSS Variable dynamically!
+            timerWrap.style.setProperty('--progress', progressPct + '%');
+
+            // Switch CSS classes
+            timerWrap.classList.add("loading");
+            timerWrap.classList.remove("ready");
+
+            canvas.classList.add("loading");
+            canvas.classList.remove("ready");
         }
-
-        user = await response.json();
-
-
-    } catch (error) {
-        console.error(error.message);
-    }
-
-    return user;
+    }, 50);
 }
 
-async function getCanvasConfig() {
-    // find canvas config file
-    let url = "../app/models/Canvas.php";
-    let canvasConfig;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name")})
-        });
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        canvasConfig = await response.json();
-
-
-    } catch (error) {
-        console.error(error.message);
-    }
-
-    // load it into local storage
-    if (canvasConfig.success) {
-        for (const [key, value] of Object.entries(canvasConfig)) {
-            if (key !== "success") {
-                localStorage.setItem(key, value);
-            }
-        }
-    }
-}
-
-async function getSnapshot() {
-    let url = "../app/services/CanvasService.php";
-    let snapshotData;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name"), action: "get snapshot"})
-        });
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        snapshotData = await response.json();
-    } catch (error) {
-        console.error(error.message);
-    }
-
-    if (snapshotData.edits !== []) {
-        localStorage.setItem("lastID", snapshotData.lastID);
-        return snapshotData.edits;
-    }
-}
-
-async function getEdits() {
-    let url = "../app/services/CanvasService.php";
-    let pixelData;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name"), lastID: localStorage.getItem("lastID"), action: "get edits"})
-        });
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        pixelData = await response.json();
-    } catch (error) {
-        console.error(error.message);
-    }
-
-    if (pixelData.edits !== []) {
-        localStorage.setItem("lastID", pixelData.lastID);
-        return pixelData.edits;
-    }
-}
-
-async function sendEdit(x, y, color) {
-    // authenticate
-    const auth = await authenticate();
-
-    if (!auth.success) {
-        console.error("auth fail");
-        return 0;
-    }
-
-    let url = "../app/services/CanvasService.php";
-    let editResult;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({canvasName: localStorage.getItem("canvas_name"), x: x, y: y, color: color, action: "new edit"})
-        });
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        editResult = await response.json();
-    } catch (error) {
-        console.error(error.message);
-    }
-
-    return editResult;
-}
-
+// handlers
 async function clickHandler(event) {
     // get x and y on canvas
     const canvasBox = canvas.getBoundingClientRect();
@@ -169,7 +105,7 @@ async function clickHandler(event) {
         // 1. also check with database
         let userData = await getUserData();
 
-        if ((Date.now() - userData.last_edit_at) >= praseInt(localStorage.getItem("canvas_wait_time")) ) {
+        if ((Date.now() - userData.last_edit_at) >= parseInt(localStorage.getItem("canvas_wait_time"))) {
             let editResult = await sendEdit(x, y, color);
 
             if (editResult.success) {
@@ -183,6 +119,14 @@ async function clickHandler(event) {
         }
     }
 }
+
+// php functions
+
+async function getUserData() {}
+
+async function sendEdit(x, y, color) {}
+
+async function getRecentEdits() {}
 
 async function getInitData() {
     return new Promise(async function(resolve, reject) {
@@ -216,23 +160,37 @@ async function getInitData() {
 // Window - load
 window.addEventListener("load", async (event) => {
     console.log("started page setup");
-    // 1. hide canvas so the change isnt as sharp
     canvas.style.visibility = "hidden";
 
-    // 2. get the init files - canvas snap, canvas edits, canvas config and user info
     let init = await getInitData();
-    await init;
-    // 3. handle output
-    // -> load the user and the last edit at and place them
-    document.querySelector(".canvas_buttons_username").innerText = init.username;
-    localStorage.setItem("last_edit_at", init.last_edit_at);
 
+    if (init && init.success) {
+        // -> load the user and the last edit at and place them
+        document.querySelector(".canvas_buttons_username").innerText = init.username;
 
-    // -> last user edit & canvas wait period ... active cooldown
+        // FIX: Match the exact key sent by your PHP (user_last_edit_at)
+        localStorage.setItem("last_edit_at", init.user_last_edit_at);
 
-    // -> show username
+        // Save config to local storage
+        let config = init.canvas_config;
+        localStorage.setItem("canvas_width", config.canvas_width);
+        localStorage.setItem("canvas_height", config.canvas_height);
+        localStorage.setItem("canvas_scale", config.canvas_scale);
+        localStorage.setItem("canvas_wait_time", config.canvas_wait_time);
 
-    // 10. show canvas
+        // Scale the canvas visually
+        scaleCanvas();
+        ctx.fillStyle = "#00ff00";
+        for (let x = 0; x < 10; x++) {
+            ctx.fillRect(5 + (2 * x) , 5, 1, 1);
+        }
+
+        // -> Start active cooldown timer
+        startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);
+    } else {
+        console.error("Failed to load init data");
+    }
+
     canvas.style.visibility = "visible";
     console.log("page setup complete");
-})
+});

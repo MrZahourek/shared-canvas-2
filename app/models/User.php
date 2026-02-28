@@ -60,7 +60,7 @@ class User {
     public function getInit() {
         return [
             "username" => $this->username,
-            "last_edit_at" => $this->last_edit_at
+            "last_edit_at" => $this->last_edit_at ? strtotime($this->last_edit_at) * 1000 : null
         ];
     }
 }

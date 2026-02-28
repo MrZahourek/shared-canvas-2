@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="assets/css/window.css">
     <link rel="stylesheet" href="assets/css/grid.css?v=2">
-    <link rel="stylesheet" href="assets/css/window_content.css">
+    <link rel="stylesheet" href="assets/css/window_content.css?v=2">
     <link rel="stylesheet" href="assets/css/music.css?v=2">
     <link rel="stylesheet" href="assets/css/screen.css">
     <link rel="stylesheet" href="assets/css/canvas.css">
@@ -44,7 +44,19 @@
                     <span class="canvas_buttons_username">USER_994</span>
 <!--                    <span class="profile_status">STATUS: CONNECTED</span>-->
                 </div>
+            </div>
+        </div>
 
+        <div class="window">
+            <div class="window_header">
+                <span class="window_name icon-canvas">canvas_area</span>
+                <div class="window_controls">
+                    <div class="window_top_btn">_</div>
+                    <div class="window_top_btn">☐</div>
+                    <div class="window_top_btn">X</div>
+                </div>
+            </div>
+            <div class="window_content canvas_buttons">
                 <div class="canvas_area_btn_wrap">
                     <button class="window_btn">New Canvas</button>
                     <button class="window_btn">Random Connect</button>
@@ -118,7 +130,7 @@
                     <span> COOLDOWN: </span>
                     <span id="timer_time" class="loading"> 00:00:00 </span>
                     <span> // </span>
-                    <span> READY </span>
+                    <span id="timer_status"> READY </span>
                 </div>
                 <div class="color_picks">
                     <input type="color" id="color_input">
@@ -131,7 +143,7 @@
     </div>
 </div>
 
-<script src="assets/js/canvasManager.js?v=2"></script>
+<script src="assets/js/canvasManager.js?v=4"></script>
 <script src="assets/js/musicPlayer.js"></script>
 </body>
 </html>

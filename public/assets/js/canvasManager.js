@@ -184,28 +184,49 @@ async function clickHandler(event) {
     }
 }
 
+async function getInitData() {
+    return new Promise(async function(resolve, reject) {
+        let url = "../app/services/CanvasService.php";
+        let initData;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({action: "init", canvasName: localStorage.getItem("canvas name")})
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            initData = await response.json();
+        } catch (error) {
+            console.error(error.message);
+            reject("fetch error");
+        }
+
+        if (initData != null ) {
+            resolve(initData);
+        }
+    });
+}
+
 // # Listeners
 
 // Window - load
 window.addEventListener("load", async (event) => {
+    console.log("started page setup");
     // 1. hide canvas so the change isnt as sharp
     canvas.style.visibility = "hidden";
 
-    // 2. get canvas config file
+    // 2. get the init files - canvas snap, canvas edits, canvas config and user info
+    let init = await getInitData();
+    await init;
+    // 3. handle output
+    // -> load the user and the last edit at and place them
+    document.querySelector(".canvas_buttons_username").innerText = init.username;
+    localStorage.setItem("last_edit_at", init.last_edit_at);
 
-    // 3. load into local storage
-
-    // 4. scale the canvas / add background color / etc..
-
-    // 5. get latest canvas snapshot
-
-    // 6. draw snap edits
-
-    // 7. get edits that are out of snapshot
-
-    // 8. draw later edits
-
-    // 9. get user data
 
     // -> last user edit & canvas wait period ... active cooldown
 
@@ -213,4 +234,5 @@ window.addEventListener("load", async (event) => {
 
     // 10. show canvas
     canvas.style.visibility = "visible";
+    console.log("page setup complete");
 })

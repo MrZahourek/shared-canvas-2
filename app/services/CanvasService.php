@@ -36,14 +36,27 @@ $user = User::findById($userID, $db);
 
 // 4. user approved
 $data = $data = json_decode(file_get_contents("php://input"), true);
+$result = [];
 
 if ($data["action"] == "init") {
     // 1. canvas config
     // 2. canvas latest snapshot
     // 3. canvas getEdits
     // 4. user data
+    $canvasData = Canvas::getInit($data["canvasName"], $db);
+    $userData = User::getInit();
 
-
+    $result = [
+        "canvas_config" => $canvasData["config"],
+        "canvas_snapshot" => $canvasData["snapshot"],
+        "canvas_recent_edits" => $canvasData["recent_edits"],
+        "canvas_last_edit_id" => $canvasData["snapshot_last_id"],
+        "username" => $userData["username"],
+        "user_last_edit_at" => $userData["last_edit_at"]
+    ];
 }
 
 else if ($data["action"] == "new edit") {}
+
+echo json_encode($result);
+exit;

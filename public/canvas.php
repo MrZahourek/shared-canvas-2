@@ -42,7 +42,7 @@
                         <div class="profile_glitch_overlay"></div>
                     </div>
                     <span class="canvas_buttons_username">USER_994</span>
-                    <span class="profile_status">STATUS: CONNECTED</span>
+<!--                    <span class="profile_status">STATUS: CONNECTED</span>-->
                 </div>
 
                 <div class="canvas_area_btn_wrap">
@@ -131,7 +131,7 @@
     </div>
 </div>
 
-<script src="assets/js/canvasManager.js"></script>
+<script src="assets/js/canvasManager.js?v=2"></script>
 <script src="assets/js/musicPlayer.js"></script>
 </body>
 </html>

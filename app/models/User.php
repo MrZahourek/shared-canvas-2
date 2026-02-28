@@ -56,4 +56,11 @@ class User {
         // Fetch and return the newly created user
         return self::findByUsername($username, $db);
     }
+
+    public function getInit() {
+        return [
+            "username" => $this->username,
+            "last_edit_at" => $this->last_edit_at
+        ];
+    }
 }

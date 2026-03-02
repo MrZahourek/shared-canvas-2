@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class="window_content canvas_area">
-                <canvas id="canvas" class="loading"></canvas>
+                <canvas style="border: groove 3px lightskyblue" id="canvas" class="loading"></canvas>
             </div>
         </div>
 

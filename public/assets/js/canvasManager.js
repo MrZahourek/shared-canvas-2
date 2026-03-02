@@ -22,6 +22,7 @@ function startRenderWorker() {
             for (const pixel of chunk) {
                 ctx.fillStyle = pixel.color;
                 ctx.fillRect(pixel.x, pixel.y, 1, 1);
+                console.info(pixel);
             }
         }
 
@@ -37,14 +38,6 @@ function startRenderWorker() {
 startRenderWorker();
 
 // # Functions
-
-// canvas functions
-function draw(pixelData) {
-    for (const pixel of pixelData) {
-        ctx.fillStyle = pixel.color;
-        ctx.fillRect(pixel.x, pixel.y, 1, 1);
-    }
-}
 
 function scaleCanvas() {
     scale = localStorage.getItem("canvas_scale");
@@ -81,6 +74,9 @@ function startCooldownTimer(lastEditMs, waitTimeMs) {
 
         if (remainingMs <= 0) {
             // --- TIMER IS DONE ---
+            console.log("handler ready");
+            canvas.addEventListener("click", clickHandler);
+
             clearInterval(timerInterval);
             timerTime.innerText = "00:00:00";
             timerStatus.innerText = "READY";
@@ -91,8 +87,6 @@ function startCooldownTimer(lastEditMs, waitTimeMs) {
 
             canvas.classList.remove("loading");
             canvas.classList.add("ready");
-
-            canvas.addEventListener("click", clickHandler);
 
         } else {
             canvas.removeEventListener("click", clickHandler);
@@ -127,32 +121,32 @@ function startCooldownTimer(lastEditMs, waitTimeMs) {
 
 // handlers
 async function clickHandler(event) {
-    console.log("handler is on");
-    // get x and y on canvas
-    const canvasBox = canvas.getBoundingClientRect();
-    const x = event.clientX - canvasBox.left;
-    const y = event.clientY - canvasBox.top;
+console.log("handler is on");
+// get x and y on canvas
+const canvasBox = canvas.getBoundingClientRect();
+const x = event.clientX - canvasBox.left;
+const y = event.clientY - canvasBox.top;
 
-    // get color
-    const color = document.getElementById("color_input").value;
+// get color
+const color = document.getElementById("color_input").value;
 
-    // validate that user can edit
-    if (canvas.classList.contains("ready")) {
-        // 1. also check with database
-        let userData = await getUserData();
+// validate that user can edit
+if (canvas.classList.contains("ready")) {
         let editResult = await sendEdit(x, y, color);
 
-        if ((Date.now() - userData.last_edit_at) >= parseInt(localStorage.getItem("canvas_wait_time"))) {
+        if (editResult.success) {
+            // reset timer and canvas state
+            canvas.classList.remove("ready");
+            canvas.classList.add("loading");
 
+            // remove event listener
+            canvas.removeEventListener("click", clickHandler);
 
-            if (editResult.success) {
-                // reset timer and canvas state
-                canvas.classList.remove("ready");
-                canvas.classList.add("loading");
-
-                // remove event listener
-                canvas.removeEventListener("click", clickHandler);
-            }
+            pixelQueue.push({x: x, y: y, color: color});
+            console.warn("painted pixel");
+        }
+        else {
+            console.error("failed to paint a pixel");
         }
     }
 }
@@ -194,7 +188,7 @@ async function sendEdit(x, y, color) {
             const response = await fetch(url, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({action: "new edit", x: x, y: y, color: color, wait:localStorage.getItem("canvas_wait_time")})
+                body: JSON.stringify({action: "new edit", x: x, y: y, color: color, wait:localStorage.getItem("canvas_wait_time"), canvasName: localStorage.getItem("canvas name")})
             });
 
             if (!response.ok) {

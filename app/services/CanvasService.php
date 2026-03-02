@@ -74,16 +74,40 @@ else if ($data["action"] == "new edit") {
     $edit_y = $data["y"];
     $edit_color = $data["color"];
 
-    // check user time
-    $diff = date_diff(date_create($user->last_edit_at), date_create("now")) -> format("%s");
-    echo $diff;
-    if (intval($diff)>=intval($data["wait"]/1000)) {
-        echo "u can edit";
+    // 1. Get the current time in total seconds
+    $now = time();
+
+    // 2. Get user's last edit in total seconds (If NULL, set to 0 so they can draw instantly)
+    $lastEditTime = $user->last_edit_at ? strtotime($user->last_edit_at) : 0;
+
+    // 3. Calculate total seconds passed
+    $diffSeconds = $now - $lastEditTime;
+
+    // 4. Get the required wait time in seconds (JS sends ms, so divide by 1000)
+    $waitSeconds = intval($data["wait"] / 1000);
+
+    // 5. Compare!
+    if ($diffSeconds >= $waitSeconds) {
+
+        // ---> TODO: Insert the pixel into the database here! <---
+        $canvas = $data["canvasName"];
+        $db -> runQuery("insert into edit_history(canvas_name, x, y, color) values (?, ?, ?, ?)", [$canvas, $edit_x, $edit_y, $edit_color])->fetch();
+
+        // ---> TODO: Update the user's last_edit_at time here! <---
+        $db -> runQuery("update users set last_edit_at = current_timestamp where userID = ?", [$user->userID])->fetch();
+
+        // Send a clean JSON success message back to JS
+        $result = [
+            "success" => true,
+            "message" => "Pixel placed successfully!"
+        ];
     }
     else {
-        echo" u cant edit <br>";
-        echo intval($data["wait"]/1000);
-        echo "<br> $diff";
+        // They clicked too fast! (Maybe they tried to hack the JS timer)
+        $result = [
+            "success" => false,
+            "error" => "Cooldown active. You must wait."
+        ];
     }
 }
 

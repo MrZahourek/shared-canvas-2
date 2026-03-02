@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&family=Workbench:BLED,SCAN@30,-2&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="assets/css/window.css">
-    <link rel="stylesheet" href="assets/css/grid.css?v=2">
+    <link rel="stylesheet" href="assets/css/grid.css?v=3">
     <link rel="stylesheet" href="assets/css/window_content.css?v=2">
     <link rel="stylesheet" href="assets/css/music.css?v=2">
     <link rel="stylesheet" href="assets/css/screen.css">
@@ -143,7 +143,7 @@
     </div>
 </div>
 
-<script src="assets/js/canvasManager.js?v=4"></script>
+<script src="assets/js/canvasManager.js?v=5"></script>
 <script src="assets/js/musicPlayer.js"></script>
 </body>
 </html>

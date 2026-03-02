@@ -5,6 +5,37 @@ const ctx = canvas.getContext("2d");
 let canvasConfig = null;
 let scale, width, height;
 
+// The Master Queue Array
+const pixelQueue = [];
+
+// The Background Worker
+function startRenderWorker() {
+    function processQueue() {
+        // If there are pixels waiting in line...
+        if (pixelQueue.length > 0) {
+
+            // Slice off up to 100 pixels from the front of the line
+            // (You can change 100 to make the loading animation faster or slower)
+            const chunk = pixelQueue.splice(0, 100);
+
+            // Draw that chunk
+            for (const pixel of chunk) {
+                ctx.fillStyle = pixel.color;
+                ctx.fillRect(pixel.x, pixel.y, 1, 1);
+            }
+        }
+
+        // Tell the browser to run this function again on the next frame
+        requestAnimationFrame(processQueue);
+    }
+
+    // Kick off the infinite loop
+    requestAnimationFrame(processQueue);
+}
+
+// Start the worker immediately when the JS loads
+startRenderWorker();
+
 // # Functions
 
 // canvas functions
@@ -61,7 +92,11 @@ function startCooldownTimer(lastEditMs, waitTimeMs) {
             canvas.classList.remove("loading");
             canvas.classList.add("ready");
 
+            canvas.addEventListener("click", clickHandler);
+
         } else {
+            canvas.removeEventListener("click", clickHandler);
+
             // --- TIMER IS RUNNING ---
             const mins = Math.floor(remainingMs / 60000);
             const secs = Math.floor((remainingMs % 60000) / 1000);
@@ -92,6 +127,7 @@ function startCooldownTimer(lastEditMs, waitTimeMs) {
 
 // handlers
 async function clickHandler(event) {
+    console.log("test");
     // get x and y on canvas
     const canvasBox = canvas.getBoundingClientRect();
     const x = event.clientX - canvasBox.left;
@@ -180,12 +216,17 @@ window.addEventListener("load", async (event) => {
 
         // Scale the canvas visually
         scaleCanvas();
-        ctx.fillStyle = "#00ff00";
-        for (let x = 0; x < 10; x++) {
-            ctx.fillRect(5 + (2 * x) , 5, 1, 1);
-        }
 
-        // -> Start active cooldown timer
+        // 1. Combine the snapshot and the recent edits into one massive array
+        const combinedEdits = init.canvas_snapshot.edits.concat(init.canvas_recent_edits);
+
+        // 2. Filter out all the redundant/covered pixels instantly!
+        const pureEdits = optimizeEdits(combinedEdits);
+
+        // 3. Push the highly optimized array into our background queue worker
+        pixelQueue.push(...pureEdits);
+
+        // Start active cooldown timer
         startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);
     } else {
         console.error("Failed to load init data");
@@ -194,3 +235,25 @@ window.addEventListener("load", async (event) => {
     canvas.style.visibility = "visible";
     console.log("page setup complete");
 });
+
+
+function optimizeEdits(allEdits) {
+    const pixelMap = new Map();
+
+    for (const edit of allEdits) {
+        // Create a unique string key for this exact coordinate (e.g., "5,10")
+        const key = `${edit.x},${edit.y}`;
+
+        // Check if we already put a pixel at this spot in our Map
+        const existingEdit = pixelMap.get(key);
+
+        // If the spot is empty, OR if the new pixel is newer (bigger editID)...
+        if (!existingEdit || edit.editID > existingEdit.editID) {
+            // ...save this pixel to the map, overwriting the old one!
+            pixelMap.set(key, edit);
+        }
+    }
+
+    // Convert the Map values back into a clean, flat array of pixels
+    return Array.from(pixelMap.values());
+}

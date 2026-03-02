@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ba009e51-3f2f-4aa5-a1d8-64ad4e9dc5cc" name="Changes" comment="" />
+    <list default="true" id="ba009e51-3f2f-4aa5-a1d8-64ad4e9dc5cc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -44,7 +46,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;backend&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/xampp/htdocs/secured_canvas/shared-canvas-2/public/assets/images&quot;,
@@ -90,6 +92,8 @@
       <workItem from="1772214474153" duration="17400000" />
       <workItem from="1772280936467" duration="5311000" />
       <workItem from="1772393986614" duration="18656000" />
+      <workItem from="1772472044359" duration="126000" />
+      <workItem from="1772472219354" duration="761000" />
     </task>
     <servers />
   </component>

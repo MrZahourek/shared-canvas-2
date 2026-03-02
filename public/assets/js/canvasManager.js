@@ -255,6 +255,7 @@ async function getInitData() {
 // # Listeners
 
 // Window - load
+// Window - load
 window.addEventListener("load", async (event) => {
     console.log("started page setup");
     canvas.style.visibility = "hidden";
@@ -262,49 +263,41 @@ window.addEventListener("load", async (event) => {
     let init = await getInitData();
 
     if (init && init.success) {
-        // -> load the user and the last edit at and place them
         document.querySelector(".canvas_buttons_username").innerText = init.username;
-
-        // FIX: Match the exact key sent by your PHP (user_last_edit_at)
         localStorage.setItem("last_edit_at", init.user_last_edit_at);
 
-        // Save config to local storage
         let config = init.canvas_config;
         localStorage.setItem("canvas_width", config.canvas_width);
         localStorage.setItem("canvas_height", config.canvas_height);
         localStorage.setItem("canvas_scale", config.canvas_scale);
         localStorage.setItem("canvas_wait_time", config.canvas_wait_time);
 
-        // Figure out the current highest edit ID on page load
-        let currentLastId = init.canvas_last_edit_id;
+        let currentLastId = init.canvas_last_edit_id || 0;
         if (init.canvas_recent_edits && init.canvas_recent_edits.length > 0) {
             currentLastId = init.canvas_recent_edits[init.canvas_recent_edits.length - 1].editID;
         }
         localStorage.setItem("last_edit_id", currentLastId);
 
-        // Scale the canvas visually
         scaleCanvas();
 
-        // 1. Combine the snapshot and the recent edits into one massive array
-        // (canvas_snapshot is already an array, so we don't use .edits here)
-        const combinedEdits = init.canvas_snapshot.concat(init.canvas_recent_edits);
+        // THE FIX: Provide blank arrays fallback so .concat() NEVER crashes on a null value!
+        const safeSnapshot = init.canvas_snapshot.edits || [];
+        const safeRecent = init.canvas_recent_edits || [];
+        const combinedEdits = safeSnapshot.concat(safeRecent);
 
-        // 2. Filter out all the redundant/covered pixels instantly!
         const pureEdits = optimizeEdits(combinedEdits);
-
-        // 3. Push the highly optimized array into our background queue worker
         pixelQueue.push(...pureEdits);
 
         refreshInterval = setInterval(editHandler, 1000);
-
-        // Start active cooldown timer
         startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);
+
+        canvas.style.visibility = "visible";
+        console.log("page setup complete");
     } else {
         console.error("Failed to load init data");
+        // Optional: Send them back to the welcome page if loading completely fails
+        // window.location.href = "welcome.php";
     }
-
-    canvas.style.visibility = "visible";
-    console.log("page setup complete");
 });
 
 

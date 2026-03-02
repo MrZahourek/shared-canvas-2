@@ -39,16 +39,20 @@ if (!$userID) {
 $user = User::findById($userID, $db);
 
 
-// 4. user approved
-$data = $data = json_decode(file_get_contents("php://input"), true);
-$result = [];
+/// 4. User Approved - Parse Data Safely
+// Provide an empty array fallback in case the input is completely empty
+$data = json_decode(file_get_contents("php://input"), true) ?? [];
+$action = $data["action"] ?? "";
+$result = ["success" => false];
 
-if ($data["action"] == "init") {
-    // 1. canvas config
-    // 2. canvas latest snapshot
-    // 3. canvas getEdits
-    // 4. user data
-    $canvasData = Canvas::getInit($data["canvasName"], $db);
+// Safety check: Always default to "global" if the canvas name is missing or null
+$canvasName = $data["canvasName"] ?? "global";
+if (empty($canvasName) || $canvasName == "null") {
+    $canvasName = "global";
+}
+
+if ($action == "init") {
+    $canvasData = Canvas::getInit($canvasName, $db);
     $userData = $user->getInit();
 
     $result = [
@@ -61,62 +65,40 @@ if ($data["action"] == "init") {
         "user_last_edit_at" => $userData["last_edit_at"]
     ];
 }
+else if ($action == "get edits") {
+    // Force this to be an integer! If JS sends the literal string "null", it will crash the DB!
+    $last_edit_id = (int)($data["last_edit_id"] ?? 0);
 
-else if ($data["action"] == "get edits") {
-    $canvas = $data["canvasName"];
-    $last_edit_id = $data["last_edit_id"];
-
-    $query = $db->runQuery("select editID, x, y, color from edit_history where editID > ? and canvas_name = ? order by editID asc", [$last_edit_id, $canvas])->fetchAll(PDO::FETCH_ASSOC);
+    $query = $db->runQuery("SELECT editID, x, y, color FROM edit_history WHERE editID > ? AND canvas_name = ? ORDER BY editID ASC", [$last_edit_id, $canvasName])->fetchAll(PDO::FETCH_ASSOC);
 
     $result = [
         "success" => true,
-        "edits" => $query
+        "edits" => $query ?: [] // Always return an array, even if empty
     ];
 }
-
-else if ($data["action"] == "new edit") {
+else if ($action == "new edit") {
     $edit_x = $data["x"];
     $edit_y = $data["y"];
     $edit_color = $data["color"];
 
-    // 1. Get the current time in total seconds
     $now = time();
-
-    // 2. Get user's last edit in total seconds (If NULL, set to 0 so they can draw instantly)
     $lastEditTime = $user->last_edit_at ? strtotime($user->last_edit_at) : 0;
-
-    // 3. Calculate total seconds passed
     $diffSeconds = $now - $lastEditTime;
-
-    // 4. Get the required wait time in seconds (JS sends ms, so divide by 1000)
     $waitSeconds = intval($data["wait"] / 1000);
 
-    // 5. Compare!
     if ($diffSeconds >= $waitSeconds) {
+        $db->runQuery("INSERT INTO edit_history (canvas_name, x, y, color) VALUES (?, ?, ?, ?)", [$canvasName, $edit_x, $edit_y, $edit_color]);
+        $db->runQuery("UPDATE users SET last_edit_at = current_timestamp WHERE userID = ?", [$user->userID]);
 
-        // ---> TODO: Insert the pixel into the database here! <---
-        $canvas = $data["canvasName"];
-        $db->runQuery("insert into edit_history(canvas_name, x, y, color) values (?, ?, ?, ?)", [$canvas, $edit_x, $edit_y, $edit_color]);
-
-        // ---> TODO: Update the user's last_edit_at time here! <---
-        $db->runQuery("update users set last_edit_at = current_timestamp where userID = ?", [$user->userID]);
-
-        // Send a clean JSON success message back to JS
         $result = [
             "success" => true,
             "message" => "Pixel placed successfully!"
         ];
-    }
-    else {
-        // They clicked too fast! (Maybe they tried to hack the JS timer)
-        $result = [
-            "success" => false,
-            "error" => "Cooldown active. You must wait."
-        ];
+    } else {
+        $result = ["success" => false, "error" => "Cooldown active."];
     }
 }
 
-
-// 5. send data
+// 5. Send data
 echo json_encode($result);
 exit;

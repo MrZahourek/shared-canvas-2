@@ -96,10 +96,10 @@ else if ($data["action"] == "new edit") {
 
         // ---> TODO: Insert the pixel into the database here! <---
         $canvas = $data["canvasName"];
-        $db -> runQuery("insert into edit_history(canvas_name, x, y, color) values (?, ?, ?, ?)", [$canvas, $edit_x, $edit_y, $edit_color])->fetch();
+        $db->runQuery("insert into edit_history(canvas_name, x, y, color) values (?, ?, ?, ?)", [$canvas, $edit_x, $edit_y, $edit_color]);
 
         // ---> TODO: Update the user's last_edit_at time here! <---
-        $db -> runQuery("update users set last_edit_at = current_timestamp where userID = ?", [$user->userID])->fetch();
+        $db->runQuery("update users set last_edit_at = current_timestamp where userID = ?", [$user->userID]);
 
         // Send a clean JSON success message back to JS
         $result = [

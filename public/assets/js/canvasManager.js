@@ -125,8 +125,8 @@ async function clickHandler(event) {
 console.log("handler is on");
 // get x and y on canvas
 const canvasBox = canvas.getBoundingClientRect();
-const x = event.clientX - canvasBox.left;
-const y = event.clientY - canvasBox.top;
+const x = Math.floor((event.clientX - canvasBox.left) / scale);
+const y = Math.floor((event.clientY - canvasBox.top) / scale);
 
 // get color
 const color = document.getElementById("color_input").value;
@@ -155,8 +155,14 @@ if (canvas.classList.contains("ready")) {
 async function editHandler() {
     let newEdits = await getRecentEdits();
 
-    if(newEdits !== "no edits") {
-        localStorage.setItem("last_edit_id", newEdits.last_edit_id);
+    // Check if we successfully got an array with actual edits inside it
+    if(newEdits && newEdits.success && newEdits.edits.length > 0) {
+
+        // Find the highest editID from the new batch (the last item in the array)
+        let highestId = newEdits.edits[newEdits.edits.length - 1].editID;
+        localStorage.setItem("last_edit_id", highestId);
+
+        // Push them to the drawing queue!
         pixelQueue.push(...newEdits.edits);
     }
 }
@@ -268,13 +274,20 @@ window.addEventListener("load", async (event) => {
         localStorage.setItem("canvas_height", config.canvas_height);
         localStorage.setItem("canvas_scale", config.canvas_scale);
         localStorage.setItem("canvas_wait_time", config.canvas_wait_time);
-        localStorage.setItem("last_edit_id", init.canvas_snapshot.last_edit_id);
+
+        // Figure out the current highest edit ID on page load
+        let currentLastId = init.canvas_last_edit_id;
+        if (init.canvas_recent_edits && init.canvas_recent_edits.length > 0) {
+            currentLastId = init.canvas_recent_edits[init.canvas_recent_edits.length - 1].editID;
+        }
+        localStorage.setItem("last_edit_id", currentLastId);
 
         // Scale the canvas visually
         scaleCanvas();
 
         // 1. Combine the snapshot and the recent edits into one massive array
-        const combinedEdits = init.canvas_snapshot.edits.concat(init.canvas_recent_edits);
+        // (canvas_snapshot is already an array, so we don't use .edits here)
+        const combinedEdits = init.canvas_snapshot.concat(init.canvas_recent_edits);
 
         // 2. Filter out all the redundant/covered pixels instantly!
         const pureEdits = optimizeEdits(combinedEdits);

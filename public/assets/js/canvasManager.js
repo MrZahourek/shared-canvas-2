@@ -7,6 +7,7 @@ let scale, width, height;
 
 // The Master Queue Array
 const pixelQueue = [];
+let refreshInterval;
 
 // The Background Worker
 function startRenderWorker() {
@@ -151,35 +152,16 @@ if (canvas.classList.contains("ready")) {
     }
 }
 
-// php functions
+async function editHandler() {
+    let newEdits = await getRecentEdits();
 
-async function getUserData() {
-    return new Promise(async function(resolve, reject) {
-        let url = "../app/services/CanvasService.php";
-        let user_last_edit;
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({action: "check edit time"})
-            });
-
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-
-            user_last_edit = await response.json();
-        } catch (error) {
-            console.error(error.message);
-            reject("fetch error");
-        }
-
-        if (user_last_edit != null ) {
-            resolve(user_last_edit);
-        }
-    });
+    if(newEdits !== "no edits") {
+        localStorage.setItem("last_edit_id", newEdits.last_edit_id);
+        pixelQueue.push(...newEdits.edits);
+    }
 }
 
+// php functions
 async function sendEdit(x, y, color) {
     return new Promise(async function(resolve, reject) {
         let url = "../app/services/CanvasService.php";
@@ -207,7 +189,35 @@ async function sendEdit(x, y, color) {
     });
 }
 
-async function getRecentEdits() {}
+async function getRecentEdits() {
+    return new Promise(async function(resolve, reject) {
+        let url = "../app/services/CanvasService.php";
+        let recentEdits;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({action: "get edits", canvasName: localStorage.getItem("canvas name"), last_edit_id: localStorage.getItem("last_edit_id")})
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            recentEdits = await response.json();
+        } catch (error) {
+            console.error(error.message);
+            reject("fetch error");
+        }
+
+        if (recentEdits != null ) {
+            resolve(recentEdits);
+        }
+        else {
+            resolve("no edits");
+        }
+    });
+}
 
 async function getInitData() {
     return new Promise(async function(resolve, reject) {
@@ -258,6 +268,7 @@ window.addEventListener("load", async (event) => {
         localStorage.setItem("canvas_height", config.canvas_height);
         localStorage.setItem("canvas_scale", config.canvas_scale);
         localStorage.setItem("canvas_wait_time", config.canvas_wait_time);
+        localStorage.setItem("last_edit_id", init.canvas_snapshot.last_edit_id);
 
         // Scale the canvas visually
         scaleCanvas();
@@ -270,6 +281,8 @@ window.addEventListener("load", async (event) => {
 
         // 3. Push the highly optimized array into our background queue worker
         pixelQueue.push(...pureEdits);
+
+        refreshInterval = setInterval(editHandler, 1000);
 
         // Start active cooldown timer
         startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);

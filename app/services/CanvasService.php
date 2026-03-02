@@ -62,10 +62,15 @@ if ($data["action"] == "init") {
     ];
 }
 
-else if ($data["action"] == "check edit time") {
+else if ($data["action"] == "get edits") {
+    $canvas = $data["canvasName"];
+    $last_edit_id = $data["last_edit_id"];
+
+    $query = $db->runQuery("select editID, x, y, color from edit_history where editID > ? and canvas_name = ? order by editID asc", [$last_edit_id, $canvas])->fetchAll(PDO::FETCH_ASSOC);
+
     $result = [
         "success" => true,
-        "user_last_edit_at" => $user->last_edit_at
+        "edits" => $query
     ];
 }
 

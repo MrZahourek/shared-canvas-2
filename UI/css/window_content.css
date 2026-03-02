@@ -1,0 +1,195 @@
+:root {
+    /* colors */
+    --win98-bg: #c0c0c0; /* The exact classic gray */
+    --win98-bg-dark: #a5a5a5;
+    --win98-title: #000080; /* Classic Navy */
+
+    /* shadows */
+    --border-outset: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+    --border-inset: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+    --border-outset-inverse: -1px -1px #0a0a0a, 1px 1px #fff, -2px -2px #808080, 2px 2px #dfdfdf;
+    --border-inset-inverse: -1px -1px #fff, 1px 1px #0a0a0a, -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+/* WINDOW CONTENT */
+.window_content {
+    padding: 15px;
+    margin: 15px 5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    font-family: "VT323", monospace;
+}
+
+.window_content_text {
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+}
+
+/* -- canvas_buttons -- */
+.canvas_buttons {
+    flex-direction: column;
+}
+
+.canvas_buttons_user_wrap {
+    margin-bottom: 8%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* The picture frame */
+.profile_img_container {
+    position: relative;
+    width: 45%;
+    aspect-ratio: 1 / 1;
+    box-shadow: var(--border-inset);
+    border: 2px solid #000;
+    background: #000;
+    padding: 2px;
+}
+
+.canvas_buttons_userProfile {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* This makes the image look like a creepy old security camera */
+    filter: grayscale(1) contrast(1.5) sepia(0.2) hue-rotate(180deg);
+}
+
+/* A dense scanline pattern specifically for the profile picture */
+.profile_glitch_overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2) 1px,
+            transparent 1px,
+            transparent 2px
+    );
+    pointer-events: none;
+}
+/* Blinking connection status */
+.profile_status {
+    font-family: 'VT323', monospace;
+    color: #ff3344;
+    font-size: 14px;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* The username screen */
+.canvas_buttons_username {
+    font-family: 'VT323', monospace;
+    font-weight: normal;
+    font-size: 22px;
+    color: #00ff00; /* LED Green */
+    background-color: #050505; /* Deep black */
+    box-shadow: var(--border-inset);
+    padding: 2px 15px;
+    width: 80%;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+    border: 1px solid #222;
+    letter-spacing: 1px;
+}
+
+.canvas_area_btn_wrap {
+    width: 75%;
+
+    flex-direction: column;
+}
+
+.canvas_area_btn_wrap .window_btn {
+    width: 100%;
+    margin: 5% 0;
+
+    font-weight: 500;
+    font-family: "VT323", monospace;
+    font-size: 1.3rem;
+}
+
+/* -- canvas_area -- */
+.canvas_area {}
+
+/* -- music_player -- */
+.music_player {}
+
+.music_player_top {
+    width: 90%;
+    height: 75%;
+}
+
+.music_player_img {
+    aspect-ratio: 1 / 1;
+
+    width: 33%;
+    float: left;
+}
+
+.music_player_song_name {
+    background-color: var(--win98-bg-dark);
+    box-shadow: var(--border-outset-inverse);
+
+    width: 75%;
+    height: 15%;
+    padding: 10px 75px;
+
+    font-weight: 900;
+    font-size: 1.25rem;
+}
+
+/* -- drawing_tools -- */
+.drawing_tools {
+    display: flex;
+    justify-content: space-between; /* Spreads timer and colors apart */
+    align-items: center;
+    flex-direction: row; /* Side-by-side */
+    width: inherit;
+    padding: 10px;
+    background: #111; /* Dark background for the control panel */
+    box-shadow: var(--border-inset);
+    border: none;
+}
+
+.draw_timer {
+    background-color: #000;
+    color: #ff3344; /* Eerie red */
+    font-size: 2.5rem;
+    padding: 5px 15px;
+    /* Glow effect */
+    text-shadow: 0 0 8px rgba(255, 51, 68, 0.6);
+    letter-spacing: 2px;
+}
+
+.color_picks {
+    display: flex;
+    gap: 5px;
+}
+
+/* Style the color inputs to look like hardware buttons */
+.color_picks input[type="color"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 35px;
+    height: 35px;
+    border: none;
+    padding: 0;
+    box-shadow: var(--border-outset);
+    cursor: crosshair;
+}
+.color_picks input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.color_picks input[type="color"]::-webkit-color-swatch {
+    border: 1px solid #000;
+}

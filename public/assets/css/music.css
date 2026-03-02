@@ -1,0 +1,236 @@
+/* --- WIN98 DESIGN SYSTEM --- */
+:root {
+    --win98-bg: #c0c0c0;
+    --win98-blue: #000080;
+    --win98-text: #000000;
+    --win98-light: #ffffff;
+    --win98-gray-dark: #808080;
+    --win98-gray-light: #dedede;
+    --win98-dark: #000000;
+    --led-green: #00ff00;
+
+    /* The magic 3D borders */
+    --border-outset: inset -1px -1px var(--win98-dark), inset 1px 1px var(--win98-light), inset -2px -2px var(--win98-gray-dark), inset 2px 2px var(--win98-gray-light);
+    --border-inset: inset -1px -1px var(--win98-light), inset 1px 1px var(--win98-dark), inset -2px -2px var(--win98-gray-light), inset 2px 2px var(--win98-gray-dark);
+}
+
+body {
+    background-color: #5e5e5e; /* Just a placeholder background */
+    /* Crucial for the retro feel - turns off font smoothing */
+    -webkit-font-smoothing: none;
+    font-family: Tahoma, "MS Sans Serif", sans-serif;
+    font-size: 11px;
+}
+
+/* --- MAIN WINDOW CONTAINER --- */
+.window.music {
+    width: 100%; /* Change width to 100% so it fills the grid column */
+    background-color: var(--win98-bg);
+    /* The main outer window border */
+    box-shadow: var(--border-outset);
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    user-select: none; /* Makes it feel more like an app */
+
+    /*position: absolute;*/
+    /*top: calc(-5vh + 15px);*/
+}
+
+/* --- TITLE BAR --- */
+.window_header {
+    background: linear-gradient(90deg, var(--win98-blue), #1084d0);
+    color: var(--win98-light);
+    padding: 2px 4px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.window_name {
+    display: flex; align-items: center; gap: 5px;
+}
+
+.window_top_btn {
+    width: 16px; height: 14px;
+    background: var(--win98-bg);
+    color: var(--win98-text);
+    box-shadow: var(--border-outset);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 9px; font-family: sans-serif; cursor: default;
+}
+
+
+/* --- MAIN BLACK DISPLAY AREA --- */
+/*.music_main {*/
+/*    background: var(--win98-dark);*/
+/*    !* The sunken effect *!*/
+/*    box-shadow: var(--border-inset);*/
+/*    padding: 6px;*/
+/*    height: 105px;*/
+/*    !* Using Grid to lay out the timer vs info areas *!*/
+/*    display: grid;*/
+/*    grid-template-columns: auto 1fr;*/
+/*    grid-template-rows: 1fr 1fr;*/
+/*    gap: 4px 10px;*/
+/*    align-items: center;*/
+
+/*    position: relative;*/
+/*    z-index: 1;*/
+/*}*/
+.music_main {
+    /* Modify your existing .music_main to use flexbox */
+    display: flex;
+    flex-direction: row; /* Side by side */
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+}
+
+.music_main:before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    opacity: .4;
+    z-index: -1;
+    background: url('../images/music_1.jpg');
+    background-size: cover;
+}
+
+/* Common styles for the LED text */
+.music_display_time, .music_display_visualiser, .music_display_track_info {
+    font-family: 'VT323', monospace;
+    color: var(--led-green);
+    text-shadow: 0 0 2px rgba(0,255,0,0.5); /* Slight glow */
+}
+
+.music_display_time {
+    grid-row: 1 / span 2; /* Take up full height on the left */
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+
+.music_display_visualiser {
+    height: 100%;
+    /* Fake visualizer bars using a repeating gradient background */
+    background-image: linear-gradient(to top, var(--led-green) 0%, var(--led-green) 20%, transparent 20%, transparent 100%);
+    background-size: 6px 100%; /* Width of bars */
+    border-bottom: 1px solid #004400;
+    opacity: 0.7;
+}
+
+.music_display_track_info {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* --- CONTROLS AREA (Bottom section) --- */
+.music_controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2px;
+}
+
+/* The sunken area for kbps/kHz info */
+.music_controls_info {
+    background: var(--win98-dark);
+    box-shadow: var(--border-inset);
+    color: var(--led-green);
+    font-family: 'VT323', monospace;
+    font-size: 12px;
+    padding: 2px 8px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Button Container */
+.music_controls_buttons {
+    display: flex;
+    gap: 2px;
+}
+
+/* The classic Win98 Buttons */
+.music_btn {
+    width: 28px; height: 24px;
+    background: var(--win98-bg);
+    box-shadow: var(--border-outset);
+    border: none;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    font-size: 14px; color: #444; /* Slightly dimmed symbols */
+}
+
+/* Volume Slider Styling */
+.music_volume_wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: #000;
+}
+
+.music_volume {
+    -webkit-appearance: none;
+    width: 60px;
+    height: 4px;
+    background: var(--win98-dark);
+    box-shadow: var(--border-inset);
+    outline: none;
+}
+
+/* The grabber block on the slider */
+.music_volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 16px;
+    background: var(--win98-bg);
+    box-shadow: var(--border-outset);
+    cursor: pointer;
+}
+
+/* Button interaction states */
+.music_btn:hover { color: #000; }
+.music_btn:active {
+    box-shadow: var(--border-inset);
+    padding-top: 2px; padding-left: 2px; /* Physical button press effect */
+}
+
+/* Adding unicode icons to the buttons */
+.mb-prev::after { content: "⏮"; font-size: 12px; }
+.mb-play::after { content: "▶"; }
+.mb-pause::after { content: "⏸"; }
+.mb-stop::after { content: "⏹"; }
+.mb-next::after { content: "⏭"; font-size: 12px; }
+.mb-open::after { content: "⏏"; }
+
+
+#music_album_art {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #333;
+    object-fit: cover;
+    /* Gives the album art a slightly washed-out, creepy CRT look */
+    filter: grayscale(0.6) sepia(0.2) contrast(1.2);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+}
+
+.music_main_text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+}

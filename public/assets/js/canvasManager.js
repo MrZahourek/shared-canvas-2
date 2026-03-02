@@ -127,7 +127,7 @@ function startCooldownTimer(lastEditMs, waitTimeMs) {
 
 // handlers
 async function clickHandler(event) {
-    console.log("test");
+    console.log("handler is on");
     // get x and y on canvas
     const canvasBox = canvas.getBoundingClientRect();
     const x = event.clientX - canvasBox.left;
@@ -140,9 +140,10 @@ async function clickHandler(event) {
     if (canvas.classList.contains("ready")) {
         // 1. also check with database
         let userData = await getUserData();
+        let editResult = await sendEdit(x, y, color);
 
         if ((Date.now() - userData.last_edit_at) >= parseInt(localStorage.getItem("canvas_wait_time"))) {
-            let editResult = await sendEdit(x, y, color);
+
 
             if (editResult.success) {
                 // reset timer and canvas state
@@ -158,9 +159,59 @@ async function clickHandler(event) {
 
 // php functions
 
-async function getUserData() {}
+async function getUserData() {
+    return new Promise(async function(resolve, reject) {
+        let url = "../app/services/CanvasService.php";
+        let user_last_edit;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({action: "check edit time"})
+            });
 
-async function sendEdit(x, y, color) {}
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            user_last_edit = await response.json();
+        } catch (error) {
+            console.error(error.message);
+            reject("fetch error");
+        }
+
+        if (user_last_edit != null ) {
+            resolve(user_last_edit);
+        }
+    });
+}
+
+async function sendEdit(x, y, color) {
+    return new Promise(async function(resolve, reject) {
+        let url = "../app/services/CanvasService.php";
+        let edit;
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({action: "new edit", x: x, y: y, color: color, wait:localStorage.getItem("canvas_wait_time")})
+            });
+
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            edit = await response.json();
+        } catch (error) {
+            console.error(error.message);
+            reject("fetch error");
+        }
+
+        if (edit != null ) {
+            resolve(edit);
+        }
+    });
+}
 
 async function getRecentEdits() {}
 

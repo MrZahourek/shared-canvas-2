@@ -62,7 +62,30 @@ if ($data["action"] == "init") {
     ];
 }
 
-else if ($data["action"] == "new edit") {}
+else if ($data["action"] == "check edit time") {
+    $result = [
+        "success" => true,
+        "user_last_edit_at" => $user->last_edit_at
+    ];
+}
+
+else if ($data["action"] == "new edit") {
+    $edit_x = $data["x"];
+    $edit_y = $data["y"];
+    $edit_color = $data["color"];
+
+    // check user time
+    $diff = date_diff(date_create($user->last_edit_at), date_create("now")) -> format("%s");
+    echo $diff;
+    if (intval($diff)>=intval($data["wait"]/1000)) {
+        echo "u can edit";
+    }
+    else {
+        echo" u cant edit <br>";
+        echo intval($data["wait"]/1000);
+        echo "<br> $diff";
+    }
+}
 
 
 // 5. send data

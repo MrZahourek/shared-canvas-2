@@ -65,14 +65,17 @@ body {
 
 
 /* --- MAIN BLACK DISPLAY AREA --- */
+.window_content.music {
+    display: flex;
+    flex-direction: column;
+}
 .music_main {
     /* FIX 1: Restored the black screen background and sunken border */
-    background: var(--win98-dark);
-    box-shadow: var(--border-inset);
 
     display: flex;
     flex-direction: row;
     align-items: center;
+    align-self: flex-end;
     gap: 15px;
     padding: 10px;
 
@@ -80,6 +83,10 @@ body {
     position: relative;
     z-index: 1;
     overflow: hidden;
+
+
+    background-color: var(--win98-dark);
+    box-shadow: var(--border-inset);
 }
 
 .music_main:before {
@@ -91,6 +98,7 @@ body {
     height: 100%; /* Uses 100% instead of hardcoded 100px */
     opacity: .2; /* Lowered opacity so the green LED text pops */
     z-index: -1;
+
     background: url('../images/music_1.jpg');
     background-size: cover;
     background-position: center;

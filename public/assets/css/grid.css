@@ -6,38 +6,51 @@
     width: 100%;
     height: 100%;
     display: grid;
-    /* Left column fixed width, right column flexible */
-    grid-template-columns: 280px 1fr 1fr;
-    /* Top row flexible, bottom row hugs its content */
-    grid-template-rows: 2fr 2fr 1fr;
+
+    /* Exactly TWO columns: Left menu is 280px, Right canvas takes the rest */
+    grid-template-columns: 280px 1fr;
+
+    /* Row 1: min-content (Hugs the tiny User box perfectly)
+       Row 2: 1fr (Stretches to fill all the empty middle space)
+       Row 3: min-content (Hugs the Music/Tools boxes at the bottom)
+    */
+    grid-template-rows: min-content 1fr min-content;
     gap: 15px;
 
-    /* This physically draws your layout! */
+    /* This physically draws your ASCII layout! */
     grid-template-areas:
-        "nav canvas canvas"
-        "connect canvas canvas"
-        "music tools tools";
+        "nav canvas"
+        "connect canvas"
+        "music tools";
 }
 
 /* Assigning the windows to their grid areas */
-.window:nth-child(1) { grid-area: nav; }
-.window:nth-child(2) { grid-area: connect}
+
+/* Pin the User and Connect boxes to the top of their grid cells */
+.window:nth-child(1) { grid-area: nav; align-self: start; }
+.window:nth-child(2) { grid-area: connect; align-self: start; }
+
 .window:nth-child(3) {
     grid-area: canvas;
     display: flex;
     flex-direction: column;
+    /* Make sure the canvas window stretches all the way down! */
+    height: 100%;
 }
-.window:nth-child(4) { grid-area: music; }
-.window:nth-child(5) { grid-area: tools; }
+
+/* Pin the Music and Tools boxes to the bottom of their grid cells */
+.window:nth-child(4) { grid-area: music; align-self: end; }
+.window:nth-child(5) { grid-area: tools; align-self: end; }
+
 
 /* Make the canvas stretch to fill its window */
 .canvas_area {
-    /*flex-grow: 1;*/
+    /* Make sure flex-grow is active so it pushes to the edges of the window! */
+    flex-grow: 1;
     margin: 0;
     padding: 0;
-    background-color: #fff; /* Placeholder for your actual canvas */
-    border: inset 2px #808080; /* Sunken border for the canvas */
 }
+
 #main_canvas {
     width: 100%;
     height: 100%;

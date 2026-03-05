@@ -1,0 +1,90 @@
+/* ============================================
+   MOBILE LAYOUT — only activates on small screens
+   ============================================ */
+@media (max-width: 768px) {
+
+    /* Kill the desktop grid entirely */
+    #grid_wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Hide the sidebar windows on mobile — not useful on small screens */
+    .window:nth-child(1),  /* USERNAME */
+    .window:nth-child(2),  /* canvas_area nav */
+    .window:nth-child(4) { /* music player */
+        display: none;
+    }
+
+    /* Canvas window takes almost all vertical space */
+    .window:nth-child(3) {
+        flex: 1;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    /* Allow the canvas to scroll horizontally if it's wider than screen */
+    .window_content.canvas_area {
+        overflow: auto;
+        flex: 1;
+        max-height: none;
+        padding: 6px;
+        margin: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    /* Tools bar becomes a slim sticky dock at the bottom */
+    .window:nth-child(5) {
+        flex-shrink: 0;
+        align-self: stretch;
+    }
+
+    /* Tighten the tools bar for mobile */
+    .window_content.drawing_tools {
+        padding: 6px 10px;
+        gap: 8px;
+    }
+
+    /* Make the timer font smaller so it fits */
+    .draw_timer {
+        font-size: 1.4rem;
+        padding: 4px 10px;
+        letter-spacing: 1px;
+    }
+
+    /* Shrink the window title bars */
+    .window_header {
+        padding: 2px 4px;
+        font-size: 10px;
+    }
+
+    /* Hide the window control buttons on mobile (no point) */
+    .window_controls {
+        display: none;
+    }
+
+    /* Make color picker and grid button sensible sizes for touch */
+    .color_picks input[type="color"] {
+        width: 44px;
+        height: 44px;
+    }
+
+    #toggle_grid_btn {
+        font-size: 1rem;
+        padding: 8px 14px;
+        height: 44px; /* Touch-friendly tap target */
+    }
+
+    /* The canvas itself should not have a fixed pixel size fighting the layout */
+    #canvas_wrapper {
+        border-width: 2px;
+    }
+}

@@ -11,10 +11,11 @@
 
     <link rel="stylesheet" href="assets/css/window.css?v=2">
     <link rel="stylesheet" href="assets/css/grid.css?v=6">
-    <link rel="stylesheet" href="assets/css/window_content.css?v=3">
-    <link rel="stylesheet" href="assets/css/music.css?v=3">
+    <link rel="stylesheet" href="assets/css/window_content.css?v=4">
+    <link rel="stylesheet" href="assets/css/music.css?v=4">
     <link rel="stylesheet" href="assets/css/screen.css?v=3">
     <link rel="stylesheet" href="assets/css/canvas.css?v=3">
+    <link rel="stylesheet" href="assets/css/mobile.css">
 </head>
 <body>
 
@@ -59,6 +60,28 @@
         </div>
         <div class="window_content canvas_buttons">
             <div class="canvas_area_btn_wrap">
+                <!-- ADD THIS display above the buttons -->
+                <div style="
+            font-family: 'VT323', monospace;
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        ">CONNECTED TO:</div>
+                <div id="current_canvas_display" style="
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            color: #00ff00;
+            background: #050505;
+            box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+            padding: 3px 10px;
+            text-shadow: 0 0 5px rgba(0,255,0,0.4);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        ">global</div>
+
                 <button class="window_btn">New Canvas</button>
                 <button class="window_btn">Random Connect</button>
                 <button class="window_btn">Custom Connect</button>
@@ -75,7 +98,7 @@
                 <div class="window_top_btn">X</div>
             </div>
         </div>
-        <div class="window_content canvas_area" style="overflow: auto; max-height: 65vh;">
+        <div class="window_content canvas_area">
 
             <div id="canvas_wrapper" style="position: relative; display: inline-block; border: groove 3px lightskyblue;">
                 <canvas id="canvas" class="loading" style="display: block;"></canvas>

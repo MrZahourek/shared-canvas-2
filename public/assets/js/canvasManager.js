@@ -326,6 +326,10 @@ window.addEventListener("load", async (event) => {
         refreshInterval = setInterval(editHandler, 1000);
         startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);
 
+        // After: document.querySelector(".canvas_buttons_username").innerText = init.username;
+        const canvasDisplay = document.getElementById("current_canvas_display");
+        if (canvasDisplay) canvasDisplay.innerText = localStorage.getItem("canvas name") || "global";
+
         canvas.style.visibility = "visible";
         console.log("page setup complete");
     } else {
@@ -368,6 +372,10 @@ document.addEventListener("visibilitychange", async () => {
 
             refreshInterval = setInterval(editHandler, 1000);
             startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);
+
+            // After: document.querySelector(".canvas_buttons_username").innerText = init.username;
+            const canvasDisplay = document.getElementById("current_canvas_display");
+            if (canvasDisplay) canvasDisplay.innerText = localStorage.getItem("canvas name") || "global";
 
             canvas.style.visibility = "visible";
             console.log("page setup complete");

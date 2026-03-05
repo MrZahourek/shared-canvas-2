@@ -119,7 +119,20 @@
 }
 
 /* -- canvas_area -- */
-.canvas_area {}
+.canvas_area {
+    flex-grow: 1;
+    margin: 0;
+    padding: 6px;
+    overflow: auto;        /* scroll if canvas is bigger than window */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../images/draw_background.gif");
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 0;         /* critical — allows flex children to shrink */
+}
 
 /* -- music_player -- */
 .music_player {}

@@ -38,6 +38,11 @@ body {
     /*top: calc(-5vh + 15px);*/
 }
 
+.window_content.music {
+    display: grid;
+    grid-template-rows: 70% 20%;
+}
+
 .window.music {
     /* ADD these two lines: */
     --album-bg: url('../images/music_1.jpg'); /* default, JS will update this */
@@ -71,10 +76,10 @@ body {
 
 
 /* --- MAIN BLACK DISPLAY AREA --- */
-.window_content.music {
-    display: flex;
-    flex-direction: column;
-}
+/*.window_content.music {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
 .window.music {
     width: 100%;
     background-color: var(--win98-bg);
@@ -255,4 +260,45 @@ body {
     justify-content: center;
     overflow: hidden;
     white-space: nowrap;
+}
+
+/* Make the music window itself a flex column so content stretches */
+.window.music {
+    display: flex;
+    flex-direction: column;
+    /* keep all your existing properties... */
+}
+
+/* The content area grows to fill available space */
+.window_content.music {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;       /* ← fills the window */
+    padding: 0;
+    margin: 0;
+}
+
+/* The display (text/visualizer) grows to push controls down */
+.music_main {
+    flex-grow: 1;                    /* ← takes all available height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    gap: 6px;
+    /* keep your existing background/position styles */
+}
+
+/* Controls stay glued to the bottom, no flex-grow */
+.music_controls {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 10%;
 }

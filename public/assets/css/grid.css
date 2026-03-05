@@ -7,36 +7,43 @@
     height: 100%;
     display: grid;
     grid-template-columns: 280px 1fr;
-    grid-template-rows: min-content 1fr min-content;
-    gap: 4px;   /* ← was 15px */
+
+    /* KEY CHANGE: middle row no longer takes all remaining space */
+    grid-template-rows: auto auto auto 1fr;
+    gap: 10px;
     grid-template-areas:
         "nav canvas"
         "connect canvas"
+        "music canvas"
         "music tools";
 }
 
-/* Assigning the windows to their grid areas */
-
-/* Pin the User and Connect boxes to the top of their grid cells */
+/* Top two windows stay hugged to top */
 .window:nth-child(1) { grid-area: nav; align-self: start; }
 .window:nth-child(2) { grid-area: connect; align-self: start; }
 
+/* Canvas window fills full height */
 .window:nth-child(3) {
     grid-area: canvas;
     display: flex;
     flex-direction: column;
-    /* Make sure the canvas window stretches all the way down! */
     height: 100%;
 }
 
-/* Pin the Music and Tools boxes to the bottom of their grid cells */
-.window:nth-child(4) { grid-area: music; align-self: end; }
-.window:nth-child(5) { grid-area: tools; align-self: end; }
+.window:nth-child(4) {
+    grid-area: music;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+}
 
+/* Tools fills its row completely */
+.window:nth-child(5) {
+    grid-area: tools;
+    align-self: stretch;  /* was: end */
+}
 
-/* Make the canvas stretch to fill its window */
 .canvas_area {
-    /* Make sure flex-grow is active so it pushes to the edges of the window! */
     flex-grow: 1;
     margin: 0;
     padding: 0;

@@ -36,16 +36,15 @@ const timeDisplay = document.querySelector(".music_display_time");
 const visualiser = document.querySelector(".music_display_visualiser");
 const albumArt = document.getElementById("music_album_art");
 
-// --- 4. Functions ---
+// In loadTrack(), guard the albumArt line:
 function loadTrack(index) {
     const track = tracks[index];
     audio.src = track.file;
     trackInfoDisplay.innerText = track.title;
-    albumArt.src = track.image;
+    if (albumArt) albumArt.src = track.image;  // ← only set if element exists
     timeDisplay.innerText = "00:00";
     visualiser.innerText = "■ ■ ■ □ □ □";
 
-    // ✅ ADD THIS — syncs background to current track art
     document.querySelector(".window.music").style.setProperty(
         "--album-bg", `url('${track.image}')`
     );

@@ -194,15 +194,16 @@
 }
 
 /* Style the color inputs to look like hardware buttons */
+.color_picks {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .color_picks input[type="color"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 35px;
-    height: 35px;
-    border: none;
-    padding: 0;
-    box-shadow: var(--border-outset);
-    cursor: crosshair;
+    width: 40px;
+    height: 32px;
+    flex-shrink: 0;
 }
 .color_picks input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;

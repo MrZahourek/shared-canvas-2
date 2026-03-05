@@ -141,12 +141,8 @@
                     <span id="timer_status"> READY </span>
                 </div>
                 <div class="color_picks">
-                    <button id="toggle_grid_btn" class="window_btn" style="margin-right: 15px; font-size: 1.2rem; padding: 2px 8px;">GRID</button>
-
-                    <input type="color" id="color_input">
-                    <input type="color" name="" id="">
-                    <input type="color" name="" id="">
-                    <input type="color" name="" id="">
+                    <button id="toggle_grid_btn" class="window_btn" style="font-size: 1.1rem; padding: 4px 16px; margin-right: 10px; flex: 1;">SHOW GRID</button>
+                    <input type="color" id="color_input" title="Pick color">
                 </div>
             </div>
         </div>

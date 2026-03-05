@@ -6,18 +6,9 @@
     width: 100%;
     height: 100%;
     display: grid;
-
-    /* Exactly TWO columns: Left menu is 280px, Right canvas takes the rest */
     grid-template-columns: 280px 1fr;
-
-    /* Row 1: min-content (Hugs the tiny User box perfectly)
-       Row 2: 1fr (Stretches to fill all the empty middle space)
-       Row 3: min-content (Hugs the Music/Tools boxes at the bottom)
-    */
     grid-template-rows: min-content 1fr min-content;
-    gap: 15px;
-
-    /* This physically draws your ASCII layout! */
+    gap: 4px;   /* ← was 15px */
     grid-template-areas:
         "nav canvas"
         "connect canvas"

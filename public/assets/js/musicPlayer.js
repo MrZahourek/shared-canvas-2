@@ -43,7 +43,12 @@ function loadTrack(index) {
     trackInfoDisplay.innerText = track.title;
     albumArt.src = track.image;
     timeDisplay.innerText = "00:00";
-    visualiser.innerText = "■ ■ ■ □ □ □"; // Idle visualizer
+    visualiser.innerText = "■ ■ ■ □ □ □";
+
+    // ✅ ADD THIS — syncs background to current track art
+    document.querySelector(".window.music").style.setProperty(
+        "--album-bg", `url('${track.image}')`
+    );
 }
 
 function playTrack() {

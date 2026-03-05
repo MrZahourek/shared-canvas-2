@@ -40,8 +40,17 @@ if ($data["authType"] == "login") {
             // clean old sessions
             Session::cleanupExpired($db);
 
-            // refresh
-            $tokens = Session::refresh($refresh_token, $db);
+            // check if the user id matches
+            $currentSessionUserID = $db->runQuery("Select userID from active_sessions where refresh_token_hash = ?", [hash('sha256', $refresh_token)])->fetch();
+            if ($currentSessionUserID["userID"] == $user->userID) {
+                // -> userID match ... refresh
+                $tokens = Session::refresh($refresh_token, $db);
+            }
+            else {
+                // -> userId doesnt match ... new session
+                Session::logout($refresh_token, $db);
+                Session::create($user->userID, $db);
+            }
 
             if (!empty($tokens["refresh"]) && !empty($tokens["access"])) {
                 // ... Send the tokens to the browser cookies

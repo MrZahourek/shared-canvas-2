@@ -65,29 +65,21 @@ body {
 
 
 /* --- MAIN BLACK DISPLAY AREA --- */
-/*.music_main {*/
-/*    background: var(--win98-dark);*/
-/*    !* The sunken effect *!*/
-/*    box-shadow: var(--border-inset);*/
-/*    padding: 6px;*/
-/*    height: 105px;*/
-/*    !* Using Grid to lay out the timer vs info areas *!*/
-/*    display: grid;*/
-/*    grid-template-columns: auto 1fr;*/
-/*    grid-template-rows: 1fr 1fr;*/
-/*    gap: 4px 10px;*/
-/*    align-items: center;*/
-
-/*    position: relative;*/
-/*    z-index: 1;*/
-/*}*/
 .music_main {
-    /* Modify your existing .music_main to use flexbox */
+    /* FIX 1: Restored the black screen background and sunken border */
+    background: var(--win98-dark);
+    box-shadow: var(--border-inset);
+
     display: flex;
-    flex-direction: row; /* Side by side */
+    flex-direction: row;
     align-items: center;
     gap: 15px;
     padding: 10px;
+
+    /* FIX 2: This traps the absolute background image strictly inside the black box */
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
 }
 
 .music_main:before {
@@ -96,34 +88,53 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100px;
-    opacity: .4;
+    height: 100%; /* Uses 100% instead of hardcoded 100px */
+    opacity: .2; /* Lowered opacity so the green LED text pops */
     z-index: -1;
     background: url('../images/music_1.jpg');
     background-size: cover;
+    background-position: center;
+}
+
+#music_album_art {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #333;
+    object-fit: cover;
+    filter: grayscale(0.6) sepia(0.2) contrast(1.2);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    flex-shrink: 0; /* Prevents the image from being squished by long track names */
+}
+
+.music_main_text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    gap: 4px; /* Adds breathing room between the text elements */
 }
 
 /* Common styles for the LED text */
 .music_display_time, .music_display_visualiser, .music_display_track_info {
     font-family: 'VT323', monospace;
     color: var(--led-green);
-    text-shadow: 0 0 2px rgba(0,255,0,0.5); /* Slight glow */
+    text-shadow: 0 0 2px rgba(0,255,0,0.5);
 }
 
 .music_display_time {
-    grid-row: 1 / span 2; /* Take up full height on the left */
-    font-size: 42px;
-    line-height: 1;
+    /* FIX 3: Removed leftover Grid properties */
+    font-size: 34px;
+    line-height: 0.8;
     letter-spacing: 2px;
 }
 
 .music_display_visualiser {
-    height: 100%;
-    /* Fake visualizer bars using a repeating gradient background */
-    background-image: linear-gradient(to top, var(--led-green) 0%, var(--led-green) 20%, transparent 20%, transparent 100%);
-    background-size: 6px 100%; /* Width of bars */
-    border-bottom: 1px solid #004400;
-    opacity: 0.7;
+    /* FIX 4: Removed conflicting height:100% and messy background gradients.
+       Now relies cleanly on the JS text symbols (■ ■ ▮ ▮) */
+    font-size: 14px;
+    letter-spacing: 2px;
+    opacity: 0.8;
 }
 
 .music_display_track_info {
@@ -132,7 +143,6 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 
 /* --- CONTROLS AREA (Bottom section) --- */
 .music_controls {

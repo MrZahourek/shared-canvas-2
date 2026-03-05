@@ -9,12 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&family=Workbench:BLED,SCAN@30,-2&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="assets/css/window.css">
-    <link rel="stylesheet" href="assets/css/grid.css?v=4">
-    <link rel="stylesheet" href="assets/css/window_content.css?v=2">
-    <link rel="stylesheet" href="assets/css/music.css?v=2">
-    <link rel="stylesheet" href="assets/css/screen.css">
-    <link rel="stylesheet" href="assets/css/canvas.css">
+    <link rel="stylesheet" href="assets/css/window.css?v=2">
+    <link rel="stylesheet" href="assets/css/grid.css?v=5">
+    <link rel="stylesheet" href="assets/css/window_content.css?v=3">
+    <link rel="stylesheet" href="assets/css/music.css?v=3">
+    <link rel="stylesheet" href="assets/css/screen.css?v=3">
+    <link rel="stylesheet" href="assets/css/canvas.css?v=3">
 </head>
 <body>
 

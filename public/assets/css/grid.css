@@ -7,16 +7,16 @@
     height: 100%;
     display: grid;
     /* Left column fixed width, right column flexible */
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 280px 1fr 1fr;
     /* Top row flexible, bottom row hugs its content */
     grid-template-rows: 2fr 2fr 1fr;
     gap: 15px;
 
     /* This physically draws your layout! */
     grid-template-areas:
-        "nav canvas"
-        "connect canvas"
-        "music tools";
+        "nav canvas canvas"
+        "connect canvas canvas"
+        "music tools tools";
 }
 
 /* Assigning the windows to their grid areas */

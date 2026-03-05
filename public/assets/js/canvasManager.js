@@ -63,6 +63,37 @@ function scaleCanvas() {
     overlay.style.backgroundSize = `${scale}px ${scale}px`;
 }
 
+function optimizeEdits(allEdits) {
+    const pixelMap = new Map();
+
+    for (const edit of allEdits) {
+        // Create a unique string key for this exact coordinate (e.g., "5,10")
+        const key = `${edit.x},${edit.y}`;
+
+        // Check if we already put a pixel at this spot in our Map
+        const existingEdit = pixelMap.get(key);
+
+        // If the spot is empty, OR if the new pixel is newer (bigger editID)...
+        if (!existingEdit || edit.editID > existingEdit.editID) {
+            // ...save this pixel to the map, overwriting the old one!
+            pixelMap.set(key, edit);
+        }
+    }
+
+    // Convert the Map values back into a clean, flat array of pixels
+    return Array.from(pixelMap.values());
+}
+
+// --- Grid Button Logic ---
+document.getElementById("toggle_grid_btn").addEventListener("click", () => {
+    const overlay = document.getElementById("grid_overlay");
+    if (overlay.style.display === "none") {
+        overlay.style.display = "block"; // Show grid
+    } else {
+        overlay.style.display = "none";  // Hide grid
+    }
+});
+
 // css functions
 function startCooldownTimer(lastEditMs, waitTimeMs) {
     const timerWrap = document.getElementById("timer_wrap");
@@ -304,34 +335,46 @@ window.addEventListener("load", async (event) => {
     }
 });
 
+document.addEventListener("visibilitychange", async () => {
+    if (!document.hidden) {
+        console.warn("RELOADING");
+        let init = await getInitData();
 
-function optimizeEdits(allEdits) {
-    const pixelMap = new Map();
+        if (init && init.success) {
+            document.querySelector(".canvas_buttons_username").innerText = init.username;
+            localStorage.setItem("last_edit_at", init.user_last_edit_at);
 
-    for (const edit of allEdits) {
-        // Create a unique string key for this exact coordinate (e.g., "5,10")
-        const key = `${edit.x},${edit.y}`;
+            let config = init.canvas_config;
+            localStorage.setItem("canvas_width", config.canvas_width);
+            localStorage.setItem("canvas_height", config.canvas_height);
+            localStorage.setItem("canvas_scale", config.canvas_scale);
+            localStorage.setItem("canvas_wait_time", config.canvas_wait_time);
 
-        // Check if we already put a pixel at this spot in our Map
-        const existingEdit = pixelMap.get(key);
+            let currentLastId = init.canvas_last_edit_id || 0;
+            if (init.canvas_recent_edits && init.canvas_recent_edits.length > 0) {
+                currentLastId = init.canvas_recent_edits[init.canvas_recent_edits.length - 1].editID;
+            }
+            localStorage.setItem("last_edit_id", currentLastId);
 
-        // If the spot is empty, OR if the new pixel is newer (bigger editID)...
-        if (!existingEdit || edit.editID > existingEdit.editID) {
-            // ...save this pixel to the map, overwriting the old one!
-            pixelMap.set(key, edit);
+            scaleCanvas();
+
+            // THE FIX: Provide blank arrays fallback so .concat() NEVER crashes on a null value!
+            const safeSnapshot = init.canvas_snapshot.edits || [];
+            const safeRecent = init.canvas_recent_edits || [];
+            const combinedEdits = safeSnapshot.concat(safeRecent);
+
+            const pureEdits = optimizeEdits(combinedEdits);
+            pixelQueue.push(...pureEdits);
+
+            refreshInterval = setInterval(editHandler, 1000);
+            startCooldownTimer(init.user_last_edit_at, config.canvas_wait_time);
+
+            canvas.style.visibility = "visible";
+            console.log("page setup complete");
+        } else {
+            console.error("Failed to load init data");
+            // Optional: Send them back to the welcome page if loading completely fails
+            // window.location.href = "welcome.php";
         }
-    }
-
-    // Convert the Map values back into a clean, flat array of pixels
-    return Array.from(pixelMap.values());
-}
-
-// --- Grid Button Logic ---
-document.getElementById("toggle_grid_btn").addEventListener("click", () => {
-    const overlay = document.getElementById("grid_overlay");
-    if (overlay.style.display === "none") {
-        overlay.style.display = "block"; // Show grid
-    } else {
-        overlay.style.display = "none";  // Hide grid
     }
 });

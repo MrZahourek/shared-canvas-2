@@ -98,7 +98,6 @@
     background-color: #050505; /* Deep black */
     box-shadow: var(--border-inset);
     padding: 2px 15px;
-    width: 80%;
     text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
     border: 1px solid #222;
     letter-spacing: 1px;

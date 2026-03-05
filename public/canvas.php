@@ -154,7 +154,7 @@
         </div>
     </div>
 
-<script src="assets/js/canvasManager.js?v=6"></script>
+<script src="assets/js/canvasManager.js?v=7"></script>
 <script src="assets/js/musicPlayer.js"></script>
 </body>
 </html>

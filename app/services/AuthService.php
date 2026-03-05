@@ -88,7 +88,7 @@ if ($data["authType"] == "login") {
         $newUser = User::create($data["username"], $data["password"], $db);
 
         // -> new user ... make new session
-        $tokens = Session::create($newUser["userID"], $db);
+        $tokens = Session::create($newUser->userID, $db);
 
         // ... Do a little database cleanup while we are here
         Session::cleanupExpired($db);

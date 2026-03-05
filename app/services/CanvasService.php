@@ -29,29 +29,27 @@ if (!$userID) {
     }
 }
 
-// 2. THE BOUNCER. If $userID is STILL false, kick them out cleanly!
+// THE BOUNCER: Kick them out if the tokens failed!
 if (!$userID) {
     echo json_encode(["success" => false, "error" => "unauthorized"]);
     exit;
 }
 
-//3.  Success! We securely know who this is.
+// 3: Success! We securely know who this is.
 $user = User::findById($userID, $db);
 
-
-/// 4. User Approved - Parse Data Safely
-// Provide an empty array fallback in case the input is completely empty
+// 4. Handle incoming requests
 $data = json_decode(file_get_contents("php://input"), true) ?? [];
 $action = $data["action"] ?? "";
 $result = ["success" => false];
 
-// Safety check: Always default to "global" if the canvas name is missing or null
 $canvasName = $data["canvasName"] ?? "global";
-if (empty($canvasName) || $canvasName == "null") {
-    $canvasName = "global";
-}
+if (empty($canvasName) || $canvasName == "null") $canvasName = "global";
 
 if ($action == "init") {
+    // Make sure you include the Canvas model at the top of this file!
+    require_once dirname(__DIR__) . "/models/Canvas.php";
+
     $canvasData = Canvas::getInit($canvasName, $db);
     $userData = $user->getInit();
 

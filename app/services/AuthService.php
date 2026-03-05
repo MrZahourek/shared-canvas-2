@@ -21,47 +21,19 @@ if ($data["authType"] == "login") {
 
     // 2. Check if they exist AND if the password matches using our new method
     if ($user && $user->verifyPassword($data["password"])) {
-        // -> user login data correct ... try to look for refresh cooke
 
-        $refresh_token = $_COOKIE["refresh_token"] ?? null;
-        if (empty($refresh_token)) {
-            // -> no token found ... make new session
-            $tokens = Session::create($user->userID, $db);
+        // -> User login data correct!
+        // THE FIX: We DO NOT care about old cookies. If they proved their password,
+        // we ALWAYS generate a brand new session and forcefully overwrite the browser cookies!
 
-            // ... Do a little database cleanup while we are here
-            Session::cleanupExpired($db);
+        $tokens = Session::create($user->userID, $db);
 
-            // ... Send the tokens to the browser cookies
-            setcookie("access_token", $tokens['access'], time() + (15 * 60), "/", "", false, true); // HttpOnly cookie
-            setcookie("refresh_token", $tokens['refresh'], time() + (7 * 24 * 60 * 60), "/", "", false, true);
-        }
-        else {
-            // -> token found ... refresh old session
-            // clean old sessions
-            Session::cleanupExpired($db);
+        // ... Do a little database cleanup while we are here
+        Session::cleanupExpired($db);
 
-            // check if the user id matches
-            $currentSessionUserID = $db->runQuery("Select userID from active_sessions where refresh_token_hash = ?", [hash('sha256', $refresh_token)])->fetch();
-            if ($currentSessionUserID["userID"] == $user->userID) {
-                // -> userID match ... refresh
-                $tokens = Session::refresh($refresh_token, $db);
-            }
-            else {
-                // -> userId doesnt match ... new session
-                Session::logout($refresh_token, $db);
-                Session::create($user->userID, $db);
-            }
-
-            if (!empty($tokens["refresh"]) && !empty($tokens["access"])) {
-                // ... Send the tokens to the browser cookies
-                setcookie("access_token", $tokens['access'], time() + (15 * 60), "/", "", false, true); // HttpOnly cookie
-                setcookie("refresh_token", $tokens['refresh'], time() + (7 * 24 * 60 * 60), "/", "", false, true);
-            }
-            else {
-                // -> invalid token
-                $response['errorList'][] = "Invalid session token";
-            }
-        }
+        // ... Send the BRAND NEW tokens to the browser cookies (This instantly overwrites the old ones!)
+        setcookie("access_token", $tokens['access'], time() + (15 * 60), "/", "", false, true);
+        setcookie("refresh_token", $tokens['refresh'], time() + (7 * 24 * 60 * 60), "/", "", false, true);
 
         $response["success"] = true;
 

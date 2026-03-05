@@ -25,28 +25,57 @@ class Canvas {
     }
 
     // 2. Create a brand new canvas using your JSON templates
-    public static function create($name, $db) {
-        // Read your default JSON templates
-        $defaultConfig = file_get_contents(dirname(__DIR__, 2) . "/database/canvasConfigTemplate.json");
-        $defaultSnapshot = file_get_contents(dirname(__DIR__, 2) . "/database/canvasSnapshotTemplate.json");
-
-        // Insert a blank snapshot first (last_edit_id starts at 0)
+    // --- 1. Create a New Canvas ---
+    public static function create($config, $db) {
+        $name = $config['name'];
+        // Insert default config (Assuming 50 limit for garbage collection)
         $db->runQuery(
-            "INSERT INTO canvas_snapshots (canvas_name, last_edit_id, snapshot) VALUES (?, 0, ?)",
-            [$name, $defaultSnapshot]
+            "INSERT INTO canvas_config (canvas_name, canvas_width, canvas_height, canvas_scale, canvas_background, canvas_wait_time, canvas_edit_limit) 
+             VALUES (?, ?, ?, ?, '#ffffff', ?, 50)",
+            [$name, $config['width'], $config['height'], $config['scale'], $config['wait']]
         );
 
-        // Fetch the ID of the snapshot we just created to link it
-        $snapRow = $db->runQuery("SELECT snapshotID FROM canvas_snapshots WHERE canvas_name = ? ORDER BY snapshotID DESC LIMIT 1", [$name])->fetch();
-        $snapID = $snapRow['snapshotID'];
-
-        // Create the main config entry
+        // Insert a blank snapshot array
         $db->runQuery(
-            "INSERT INTO canvas_configs (canvas_name, snapshotID, config) VALUES (?, ?, ?)",
-            [$name, $snapID, $defaultConfig]
+            "INSERT INTO canvas_snapshots (canvas_name, snapshot_data, snapshot_last_id) VALUES (?, '[]', 0)",
+            [$name]
+        );
+    }
+
+    // --- 2. The Snapshot Garbage Collector ---
+    public static function bakeSnapshot($canvasName, $db) {
+        // 1. Get current snapshot array
+        $snapRow = $db->runQuery("SELECT snapshot_data FROM canvas_snapshots WHERE canvas_name = ?", [$canvasName])->fetch();
+        if (!$snapRow) return;
+        $snapshotPixels = json_decode($snapRow['snapshot_data'], true) ?? [];
+
+        // 2. Get all pending edits
+        $edits = $db->runQuery("SELECT editID, x, y, color FROM edit_history WHERE canvas_name = ? ORDER BY editID ASC", [$canvasName])->fetchAll(PDO::FETCH_ASSOC);
+        if (count($edits) == 0) return;
+
+        // 3. We use a PHP array as a "Map" to merge them (Instantly overwrites older pixels!)
+        $pixelMap = [];
+        foreach ($snapshotPixels as $p) {
+            $key = $p['x'] . ',' . $p['y'];
+            $pixelMap[$key] = $p;
+        }
+
+        $highestId = 0;
+        foreach ($edits as $e) {
+            $key = $e['x'] . ',' . $e['y'];
+            $pixelMap[$key] = ['x' => $e['x'], 'y' => $e['y'], 'color' => $e['color']];
+            if ($e['editID'] > $highestId) $highestId = $e['editID'];
+        }
+
+        // 4. Flatten map back to JSON and save it
+        $newSnapshotJson = json_encode(array_values($pixelMap));
+        $db->runQuery(
+            "UPDATE canvas_snapshots SET snapshot_data = ?, snapshot_last_id = ? WHERE canvas_name = ?",
+            [$newSnapshotJson, $highestId, $canvasName]
         );
 
-        return self::findByName($name, $db);
+        // 5. Delete the old rows from edit_history to keep the database lightweight!
+        $db->runQuery("DELETE FROM edit_history WHERE canvas_name = ? AND editID <= ?", [$canvasName, $highestId]);
     }
 
     // 3. Fetch the absolute latest snapshot array

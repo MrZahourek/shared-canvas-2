@@ -82,7 +82,7 @@
             text-align: center;
         ">global</div>
 
-                <button class="window_btn">New Canvas</button>
+                <button class="window_btn" id="btn_new_canvas">New Canvas</button>
                 <button class="window_btn">Random Connect</button>
                 <button class="window_btn">Custom Connect</button>
             </div>
@@ -171,7 +171,81 @@
         </div>
     </div>
 
+    <div id="create_canvas_dialog" class="window" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 320px; box-shadow: 5px 5px 15px rgba(0,0,0,0.8), var(--border-outset);">
+        <div class="window_header">
+            <span class="window_name">Create_New_Canvas.exe</span>
+            <div class="window_controls">
+                <div class="window_top_btn" id="close_canvas_dialog" style="cursor: pointer;">X</div>
+            </div>
+        </div>
+        <div class="window_content" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <label>Canvas Name:<br> <input type="text" id="cc_name" style="width: 100%; font-family: 'VT323'; font-size: 1rem;"></label>
+
+            <div style="display: flex; gap: 10px;">
+                <label>Width:<br> <input type="number" id="cc_width" value="64" style="width: 100%; font-family: 'VT323'; font-size: 1rem;"></label>
+                <label>Height:<br> <input type="number" id="cc_height" value="64" style="width: 100%; font-family: 'VT323'; font-size: 1rem;"></label>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <label>Scale (px):<br> <input type="number" id="cc_scale" value="10" style="width: 100%; font-family: 'VT323'; font-size: 1rem;"></label>
+                <label>Wait Time (ms):<br> <input type="number" id="cc_wait" value="5000" style="width: 100%; font-family: 'VT323'; font-size: 1rem;"></label>
+            </div>
+
+            <button class="window_btn" id="btn_submit_canvas" style="margin-top: 15px; width: 100%;">Initialize Canvas</button>
+        </div>
+    </div>
+</div>
+
 <script src="assets/js/canvasManager.js?v=7"></script>
 <script src="assets/js/musicPlayer.js"></script>
+<script>
+    // --- CANVAS CREATOR LOGIC ---
+    const btnNewCanvas = document.getElementById("btn_new_canvas");
+    const dialogCreate = document.getElementById("create_canvas_dialog");
+    const btnCloseDialog = document.getElementById("close_canvas_dialog");
+    const btnSubmitCanvas = document.getElementById("btn_submit_canvas");
+
+    // Open popup
+    btnNewCanvas.addEventListener("click", () => {
+        dialogCreate.style.display = "block";
+    });
+
+    // Close popup
+    btnCloseDialog.addEventListener("click", () => {
+        dialogCreate.style.display = "none";
+    });
+
+    // Submit Data
+    btnSubmitCanvas.addEventListener("click", async () => {
+        // Gather all the settings
+        const config = {
+            name: document.getElementById("cc_name").value.trim() || "canvas_" + Math.floor(Math.random() * 9999),
+            width: parseInt(document.getElementById("cc_width").value),
+            height: parseInt(document.getElementById("cc_height").value),
+            scale: parseInt(document.getElementById("cc_scale").value),
+            wait: parseInt(document.getElementById("cc_wait").value)
+        };
+
+        // Show a loading state
+        btnSubmitCanvas.innerText = "Creating...";
+
+        const response = await fetch("../app/services/CanvasService.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "create canvas", config: config })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Automatically switch the user to their brand new canvas!
+            localStorage.setItem("canvas name", config.name);
+            window.location.reload();
+        } else {
+            alert("Error: " + result.error);
+            btnSubmitCanvas.innerText = "Initialize Canvas";
+        }
+    });
+</script>
 </body>
 </html>

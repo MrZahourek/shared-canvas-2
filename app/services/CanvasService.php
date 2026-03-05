@@ -95,7 +95,40 @@ else if ($action == "new edit") {
     } else {
         $result = ["success" => false, "error" => "Cooldown active."];
     }
+
+    if ($diffSeconds >= $waitSeconds) {
+        $db->runQuery("INSERT INTO edit_history (canvas_name, x, y, color) VALUES (?, ?, ?, ?)", [$canvasName, $edit_x, $edit_y, $edit_color]);
+        $db->runQuery("UPDATE users SET last_edit_at = current_timestamp WHERE userID = ?", [$user->userID]);
+
+        // ---> NEW: THE GARBAGE COLLECTOR TRIGGER <---
+        // Every time someone places a pixel, check how many rows are in edit_history
+        $limitCheck = $db->runQuery("SELECT COUNT(editID) as c FROM edit_history WHERE canvas_name = ?", [$canvasName])->fetch();
+
+        // If there are 50 or more edits waiting, bake them into the snapshot!
+        if ($limitCheck && $limitCheck['c'] >= 50) {
+            Canvas::bakeSnapshot($canvasName, $db);
+        }
+
+        $result = [
+            "success" => true,
+            "message" => "Pixel placed successfully!"
+        ];
+    } else {
+        $result = ["success" => false, "error" => "Cooldown active."];
+    }
 }
+
+else if ($action == "create canvas") {
+    try {
+        // Try to build it using our new model function
+        Canvas::create($data["config"], $db);
+        $result = ["success" => true];
+    } catch (Exception $e) {
+        // If it fails, the name is probably already taken in the DB!
+        $result = ["success" => false, "error" => "Canvas name is invalid or already taken."];
+    }
+}
+
 
 // 5. Send data
 echo json_encode($result);

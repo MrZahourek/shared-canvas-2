@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ba009e51-3f2f-4aa5-a1d8-64ad4e9dc5cc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/public/assets/css/mobile.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/assets/css/grid.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/css/grid.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/assets/css/music.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/css/music.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/assets/css/window_content.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/css/window_content.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/assets/js/canvasManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/js/canvasManager.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/assets/js/musicPlayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/assets/js/musicPlayer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/Canvas.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/Canvas.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/CanvasService.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/CanvasService.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/canvas.php" beforeDir="false" afterPath="$PROJECT_DIR$/public/canvas.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -103,7 +99,7 @@
       <workItem from="1772472219354" duration="1233000" />
       <workItem from="1772497943378" duration="598000" />
       <workItem from="1772729252002" duration="2430000" />
-      <workItem from="1772733288724" duration="10157000" />
+      <workItem from="1772733288724" duration="11579000" />
     </task>
     <servers />
   </component>
